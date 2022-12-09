@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/libs/bootstrap@5.2.3/bootstrap.min.css">
+    <link rel="stylesheet" href="/libs/bootstrap-icons@1.10.2/bootstrap-icons.css">
+    <link rel="stylesheet" href="/pages/login/register.css">
+    <title>Aperoland</title>
+</head>
+<body class="text-center">
+    {{{navbar}}}
+
+    <main class="flex-shrink-0 form-signin w-100 m-auto">
+        <form action="/register" method="post">
+            <img class="mb-4" src="https://getbootstrap.com/docs/5.2/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">
+            <h1 class="h3 mb-3 fw-normal">Inscription</h1>
+
+            {{#if success}}
+                <div class="alert alert-success" role="alert"> {{success}} </div>
+            {{/if}}
+
+            {{#if warning}}
+                <div class="alert alert-warning" role="alert"> {{warning}} </div>
+            {{/if}}
+
+            {{#if error}}
+                <div class="alert alert-warning" role="alert"> {{error}} </div>
+            {{/if}}
+
+            <div class="form-floating">
+                <input type="text" class="form-control" id="floatingInput" placeholder="Nom d'utilisateur" name="username" required>
+                <label for="floatingInput">Nom d'utilisateur</label>
+            </div>
+            <div class="form-floating">
+                <input type="email" class="form-control" id="floatingInput" placeholder="Adresse mail" name="email" required>
+                <label for="floatingInput">Adresse mail</label>
+            </div>
+            <div class="form-floating">
+                <input type="password" class="form-control" id="floatingPassword" placeholder="Mot de passe" name="password" required>
+                <label for="floatingPassword">Mot de passe</label>
+            </div>
+            <div class="form-floating">
+                <input type="password" class="form-control" id="floatingPassword" placeholder="Confimation mot de passe" name="passwordConfirm" required>
+                <label for="floatingPassword">Confimation mot de passe</label>
+            </div>
+            <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+            <p class="mt-5 mb-3 text-muted">{{{projectName}}} &copy; {{{currentYear}}}</p>
+        </form>
+    </main>
+
+    <script src="/libs/bootstrap@5.2.3/bootstrap.bundle.min.js"></script>
+</body>
+</html>
