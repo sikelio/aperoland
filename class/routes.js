@@ -41,6 +41,7 @@ class Routes {
             res.render('register', {
                 navbar: components.publicNavbar,
                 projectName: info.displayName,
+                cgu: components.cgu,
                 currentYear: new Date().getFullYear()
             });
         });
@@ -74,10 +75,9 @@ class Routes {
                         if (error) {}
 
                         const sql = `
-                            SELECT eventsparticipate.idEvent, eventsparticipate.idUser, events.name, events.address, events.description, users.username
-                            FROM eventsparticipate
-                            JOIN events ON eventsparticipate.idUser = events.idUser
-                            JOIN users ON events.idUser = users.idUser
+                            SELECT events.name, users.username, events.description, events.uuid FROM eventsparticipate
+                            RIGHT JOIN events ON eventsparticipate.idEvent = events.idEvent
+                            RIGHT JOIN users ON eventsparticipate.idUser = users.idUser
                             WHERE eventsparticipate.idUser = ?
                         `;
 
@@ -86,11 +86,10 @@ class Routes {
                                 // TODO
                             }
 
-                            console.error(results);
-
                             return res.render('app', {
                                 navbar: components.appNavbar,
                                 addEvent: components.addEvent,
+                                joinEvent: components.joinEvent,
                                 eventsList: results
                             });
                         });
@@ -107,8 +106,42 @@ class Routes {
             }
         });
 
-        app.get('/app/event/:idEvent', (req, res) => {
+        app.get('/app/event/:uuid', (req, res) => {
+            if (req.cookies.aperolandTicket) {
+                let sql = `
+                    SELECT * FROM events
+                    RIGHT JOIN users ON events.idUser = users.idUser
+                    WHERE uuid = ?
+                `;
 
+                mysql.query(sql, req.params.uuid, (error, results) => {
+                    if (error) {
+                        // TODO
+                    }
+
+                    const eventInfo = results[0];
+
+                    sql = `
+                        SELECT * FROM eventsparticipate
+                        RIGHT JOIN users ON eventsparticipate.idUser = users.idUser
+                        WHERE idEvent = ?
+                    `;
+
+                    mysql.query(sql, eventInfo.idEvent, (error, results) => {
+                        if (error) {
+                            // TODO
+
+                        }
+
+                        return res.render('event', {
+                            navbar: components.appNavbar,
+                            eventName: eventInfo.name,
+                            organizer: eventInfo.username,
+                            participants: results
+                        });
+                    });
+                });
+            }
         });
     }
 

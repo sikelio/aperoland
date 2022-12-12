@@ -15,11 +15,21 @@ class Post {
 
     #public(app) {
         app.post('/register', (req, res) => {
-            const { username, email, password, passwordConfirm } = req.body;
+            const { username, email, password, passwordConfirm, cgu } = req.body;
+
+            if (cgu != 'on') {
+                return res.render('register', {
+                    warning: 'Vous devez accepter les CGU',
+                    navbar: components.publicNavbar,
+                    projectName: info.displayName,
+                    cgu: components.cgu,
+                    currentYear: new Date().getFullYear()
+                });
+            }
 
             mysql.query('SELECT * FROM users WHERE email = ?', [email], async (error, results) => {
                 if (error) {
-                    console.log(error);
+                    // TODO
                 }
 
                 if (results.length > 0) {
@@ -103,6 +113,10 @@ class Post {
         });
     }
 
+    /**
+     * Application post routes
+     * @param {function} app Express functions
+     */
     #application(app) {
         app.post('/home/app/add-event', async (req, res) => {
             const { name, description, address } = req.body;
@@ -139,6 +153,53 @@ class Post {
                     });
                 });
             } catch (error) {}
+        });
+
+        app.post('/home/app/join-event', async (req, res) => {
+            const { uuid } = req.body;
+
+            mysql.query('SELECT * FROM events WHERE uuid = ?', uuid, (error, results) => {
+                if (error) {
+                    // TODO
+                }
+
+                const idEvent = results[0].idEvent;
+
+                if (!idEvent) {
+                    return res.redirect('/app/home');
+                }
+
+                mysql.query('SELECT * FROM eventsparticipate WHERE idEvent = ?', idEvent, async (error, results) => {
+                    if (error) {
+                        // TODO
+                    }
+
+                    try {
+                        const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
+                            process.env.JWT_SECRET
+                        );
+
+                        if (results[0].idUser == decoded.idUser) {
+                            return res.redirect('/app/home');
+                        }
+
+                        const values = {
+                            idEvent: results[0].idEvent,
+                            idUser: decoded.idUser
+                        };
+
+                        mysql.query('INSERT INTO eventsparticipate SET ?', values, (error, results) => {
+                            if (error) {
+                                // TODO
+                            }
+
+                            return res.redirect(`/app/event/${uuid}`);
+                        });
+                    } catch (error) {
+                        // TODO
+                    }
+                });
+            });
         });
     }
 

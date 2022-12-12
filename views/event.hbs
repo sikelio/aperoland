@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/libs/bootstrap@5.2.3/bootstrap.min.css">
+    <link rel="stylesheet" href="/libs/bootstrap-icons@1.10.2/bootstrap-icons.css">
+    <link rel="stylesheet" href="/libs/tom-select@2.2.2/tom-select.css">
+    <link rel="stylesheet" href="/pages/event/event.css">
+    <title>Aperoland - {{eventName}}</title>
+</head>
+<body>
+    {{{navbar}}}
+
+    <main class="flex-shrink-0">
+        <div class="container text-center">
+            <h3 class="">{{eventName}}</h3>
+            <span class="fst-italic">organisé par : {{organizer}}</span>
+
+            <table class="table mt-5">
+                <thead>
+                    <th scope="col">Participants</th>
+                </thead>
+                <tbody>
+                    {{#if participants}}
+                        {{#each participants}}
+                            <tr>
+                                <td>{{username}}</td>
+                            </tr>
+                        {{/each}}
+                    {{else}}
+                        <td>Aucun participant</td>
+                    {{/if}}
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script src="/libs/bootstrap@5.2.3/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -17,30 +17,32 @@
         <div class="container control">
             <div class="btn-group" role="group" aria-label="Basic example">
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEvent">Créer un apéro</button>
-                <button type="button" class="btn btn-primary">Rejoindre un apéro</button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#joinEvent">Rejoindre un apéro</button>
             </div>
         </div>
 
         <div class="container mt-4">
             <div class="row">
-                {{#each eventsList}}
-                    <div class="col-xs-12 col-sm-8 col-md-4 col-lg-4 col-xl-4 col-xxl-4">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">{{name}}</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">{{username}}</h6>
-                                <p class="card-text">{{description}}</p>
-                                <a href="#" class="card-link">Card link</a>
-                                <a href="#" class="card-link">Another link</a>
+                {{#if eventsList}}
+                    {{#each eventsList}}
+                        <div class="col-xs-12 col-sm-8 col-md-4 col-lg-4 col-xl-4 col-xxl-4 p-2">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{name}}</h5>
+                                    <h6 class="card-subtitle mb-2 text-muted">{{username}}</h6>
+                                    <p class="card-text">{{description}}</p>
+                                    <a href="/app/event/{{uuid}}" class="card-link">Participants</a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                {{/each}}
+                    {{/each}}
+                {{/if}}
             </div>
         </div>
     </main>
 
     {{{addEvent}}}
+    {{{joinEvent}}}
 
     <script src="/libs/bootstrap@5.2.3/bootstrap.bundle.min.js"></script>
     <script src="/libs/tom-select@2.2.2/tom-select.complete.min.js"></script>

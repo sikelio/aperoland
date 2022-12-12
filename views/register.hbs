@@ -45,10 +45,23 @@
                 <input type="password" class="form-control" id="floatingPassword" placeholder="Confimation mot de passe" name="passwordConfirm" required>
                 <label for="floatingPassword">Confimation mot de passe</label>
             </div>
+            <div class="checkbox mb-3">
+                <label>
+                    <input type="checkbox" id="CGU" name="cgu">
+                    <label for="CGU">
+                        En cochant cette case vous vous engager à respecter les
+                        <a href="#" class="" data-bs-toggle="modal" data-bs-target="#cgu">
+                            CGU
+                        </a>
+                    </label>
+                </label>
+            </div>
             <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
             <p class="mt-5 mb-3 text-muted">{{{projectName}}} &copy; {{{currentYear}}}</p>
         </form>
     </main>
+
+    {{{cgu}}}
 
     <script src="/libs/bootstrap@5.2.3/bootstrap.bundle.min.js"></script>
 </body>
