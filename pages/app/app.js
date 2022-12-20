@@ -1,20 +1,25 @@
 class App {
-    init() {
-        // this.#modalsSelect();
+    init(element) {
+        this.#modalsSelect(element);
     }
 
-    #modalsSelect() {
-        new TomSelect('#address',{
-            valueField: 'url',
-            labelField: 'name',
-            searchField: 'name',
+    #modalsSelect(element) {
+        new TomSelect(element, {
+            valueField: 'label',
+            labelField: 'label',
+            searchField: 'label',
+            maxItems: 1,
+            onItemAdd: (value, item) => {
+                this.#addressCallback(value, item)
+            },
+            closeAfterSelect: true,
             load: function(query, callback) {
                 var url = '/api/geocode?q=' + encodeURIComponent(query);
-                axios.get(url)
+                fetch(url)
                     .then(response => response.json())
                     .then(json => {
-                        callback(json.items);
-                    }).catch(() => {
+                        callback(json);
+                    }).catch(()=>{
                         callback();
                     });
             },
@@ -22,41 +27,39 @@ class App {
                 option: function(item, escape) {
                     return `
                         <div class="py-2 d-flex">
-                            <div class="icon me-3">
-                                <img class="img-fluid" src="${item.owner.avatar_url}"/>
-                            </div>
                             <div>
                                 <div class="mb-1">
-                                    <span class="h4">
-                                        ${escape(item.name)}
+                                    <span>
+                                        ${escape(item.label)}
                                     </span>
-                                    <span class="text-muted">by ${escape(item.owner.login)}</span>
+                                    <span id="lat" class="d-none">${escape(item.coordinates[0])}</span>
+                                    <span id="long" class="d-none">${escape(item.coordinates[1])}</span>
                                 </div>
-                                <div class="description">${escape(item.description)}</div>
                             </div>
                         </div>
                     `;
                 },
                 item: function(item, escape) {
-                    console.error(item);
                     return `
                         <div class="py-2 d-flex">
-                            <div class="icon me-3">
-                                <img class="img-fluid" src="${item.owner.avatar_url}"/>
-                            </div>
                             <div>
                                 <div class="mb-1">
-                                    <span class="h4">
-                                        ${escape(item.name)}
+                                    <span>
+                                        ${escape(item.label)}
                                     </span>
-                                    <span class="text-muted">by ${escape(item.owner.login)}</span>
+                                    <span id="lat" class="d-none">${escape(item.coordinates[0])}</span>
+                                    <span id="long" class="d-none">${escape(item.coordinates[1])}</span>
                                 </div>
-                                <div class="description">${escape(item.description)}</div>
                             </div>
                         </div>
                     `;
                 }
             },
         });
+    }
+
+    #addressCallback(value, item) {
+        document.getElementById('latitude').value = item.querySelectorAll('#lat')[0].innerText;
+        document.getElementById('longitude').value = item.querySelectorAll('#long')[0].innerText;
     }
 }

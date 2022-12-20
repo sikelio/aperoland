@@ -14,7 +14,11 @@
                         <textarea class="form-control" id="eventDescription" rows="3" placeholder="Description" name="description"></textarea>
                     </div>
                     <div class="mb-3">
-                        <input type="text" class="form-control" id="address" placeholder="Adresse" name="address">
+                        <select class="form-select" name="address" id="address" placeholder="Adresse" multiple></select>
+                    </div>
+                    <div class="mb-3 d-none">
+                        <input type="text" class="form-control" id="latitude" placeholder="Latitude" name="latitude">
+                        <input type="text" class="form-control" id="longitude" placeholder="Longitude" name="longitude">
                     </div>
                 </div>
                 <div class="modal-footer">

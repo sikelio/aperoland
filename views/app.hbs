@@ -36,6 +36,10 @@
                             </div>
                         </div>
                     {{/each}}
+                {{else}}
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12 p-2">
+                        <h3 class="text-center">Aucun évenement</h3>
+                    </div>
                 {{/if}}
             </div>
         </div>
@@ -50,7 +54,7 @@
     <script src="/pages/app/app.js"></script>
     <script>
         const app = new App;
-        app.init(); 
+        app.init('#address');
     </script>
 </body>
 </html>

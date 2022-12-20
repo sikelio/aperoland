@@ -6,20 +6,27 @@ class API {
     }
 
     #geocode(app) {
-        app.get('/api/geocode', (req, res) => {
+        app.get('/api/geocode', async (req, res) => {
             let queryString = req.query.q;
-            let url = 'https://api.github.com/search/repositories?q=' + encodeURIComponent(queryString);
+            let url = 'https://api-adresse.data.gouv.fr/search/?q=' + encodeURIComponent(queryString);
 
-            axios.get(url)
+            await axios.get(url)
                 .then((response) => {
-                    res.status(200).json(response.items)
+                    let finalData = Array();
+
+                    response.data.features.forEach(element => {
+                        if (!element.properties['coordinates']) {
+                            element.properties['coordinates'] = [element.geometry.coordinates[1], element.geometry.coordinates[0]]
+                        }
+
+                        finalData.push(element.properties);
+                    });
+
+                    res.send(finalData)
                 })
                 .catch((error) => {
-
-                })
-                .then((test) => {
-                    console.error(test);
-                })
+                    res.send([]);
+                });
         });
     }
 }

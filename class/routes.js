@@ -130,7 +130,6 @@ class Routes {
                     mysql.query(sql, eventInfo.idEvent, (error, results) => {
                         if (error) {
                             // TODO
-
                         }
 
                         return res.render('event', {
