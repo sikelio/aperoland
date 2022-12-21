@@ -16,17 +16,23 @@
     <main class="flex-shrink-0">
         <div class="container text-center">
             <h3 class="">{{eventName}}</h3>
-            <span class="fst-italic">organisé par : {{organizer}}</span>
+            <span>Description : </span>
+            <span class="fst-italic">{{description}}</span>
+            <br>
+            <span>organisé par : </span>
+            <span class="fst-italic">{{organizer}}</span>
 
             <table class="table mt-5">
                 <thead>
                     <th scope="col">Participants</th>
+                    <th scope="col">Email</th>
                 </thead>
                 <tbody>
                     {{#if participants}}
                         {{#each participants}}
                             <tr>
                                 <td>{{username}}</td>
+                                <td>{{email}}</td>
                             </tr>
                         {{/each}}
                     {{else}}

@@ -16,6 +16,9 @@ class Express {
     #app = express();
     #port = process.env.EXPRESS_PORT;
 
+    /**
+     * Start point of ExpressJS web server
+     */
     init() {
         files.init(this.#app);
         this.#app.set('view engine', 'hbs');
@@ -28,7 +31,9 @@ class Express {
         post.init(this.#app);
         routes.init(this.#app);
         api.init(this.#app);
-
+        this.#app.all('*', (req, res) => {
+            res.redirect('/app/404');
+        });
         this.#app.listen(this.#port, () => {
             console.log(`Aperoland launched on port ${this.#port}`);
         });

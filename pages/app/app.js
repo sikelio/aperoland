@@ -1,4 +1,9 @@
 class App {
+    /**
+     * Creation of an address select
+     * @param {element} element ExpressJS functions
+     * @returns HTML component
+     */
     modalsSelect(element) {
         new TomSelect(element, {
             valueField: 'label',
@@ -54,11 +59,23 @@ class App {
         });
     }
 
+    /**
+     * Callback of the latitude and longitude value into the modal
+     * @param {string} value String of the selected value
+     * @param {element} item HTML component returned
+     */
     #addressCallback(value, item) {
         document.getElementById('latitude').value = item.querySelectorAll('#lat')[0].innerText;
         document.getElementById('longitude').value = item.querySelectorAll('#long')[0].innerText;
     }
 
+    /**
+     * Creation of the map for the location of the event
+     * @param {element} element ID of the DIV for the map
+     * @param {number} latitude Latitude of the event
+     * @param {number} longitude Longitude of the event
+     * @param {string} eventName Name of the event
+     */
     leafletMap(element = 'map', latitude, longitude, eventName = '') {
         var map = L.map(element).setView([latitude, longitude], 15);
 

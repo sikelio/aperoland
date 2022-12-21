@@ -7,6 +7,10 @@ const path = require('path');
 const { promisify } = require('util');
 
 class Routes {
+    /**
+     * Init of all types of routes
+     * @param {function} app ExpressJS functions
+     */
     init(app) {
         this.#public(app);
         this.#error(app);
@@ -14,6 +18,11 @@ class Routes {
         this.#admin(app);
     }
 
+    /**
+     * Creation of the public routes
+     * @param {function} app ExpressJS functions
+     * @returns Page
+     */
     #public(app) {
         app.get('/', async (req, res) => {
             if (req.cookies.aperolandTicket) {
@@ -61,8 +70,22 @@ class Routes {
         });
     }
 
-    #error(app) {}
+    /**
+     * Creation of the errors code routes
+     * @param {function} app ExpressJS functions
+     * @returns Page
+     */
+    #error(app) {
+        app.get('/app/404', (req, res) => {
+            return res.sendFile(components.notFound);
+        })
+    }
 
+    /**
+     * Creation of the application routes
+     * @param {function} app ExpressJS functions
+     * @returns Page
+     */
     #application(app) {
         app.get('/app/home', async (req, res) => {
             if (req.cookies.aperolandTicket) {
@@ -108,12 +131,38 @@ class Routes {
 
         app.get('/app/event/:uuid', (req, res, next) => {
             let sql = `
-                SELECT * FROM events
-                RIGHT JOIN 
+                SELECT eventsparticipate.idUser FROM events
+                RIGHT JOIN eventsparticipate ON events.idEvent = eventsparticipate.idEvent
+                WHERE events.uuid = ?
             `;
-            mysql.query(sql, async (error, results) => {})
 
-            next();
+            mysql.query(sql, req.params.uuid, async (error, results) => {
+                if (error) {
+                    // TODO
+                }
+
+                let isAllowed = false;
+
+                try {
+                    const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
+                        process.env.JWT_SECRET
+                    );
+
+                    results.forEach(element => {
+                        if (decoded.idUser == element.idUser) {
+                            isAllowed = true;
+                        }
+                    });
+
+                    if (isAllowed == false) {
+                        return res.status(403).redirect('/app/403');
+                    }
+
+                    return next();
+                } catch (error) {
+                    return res.redirect('/');
+                }
+            });
         }, (req, res) => {
             if (req.cookies.aperolandTicket) {
                 let sql = `
@@ -144,6 +193,7 @@ class Routes {
                             navbar: components.appNavbar,
                             eventName: eventInfo.name,
                             organizer: eventInfo.username,
+                            description: eventInfo.description,
                             participants: results,
                             latitude: eventInfo.latitude,
                             longitude: eventInfo.longitude,
@@ -154,6 +204,11 @@ class Routes {
         });
     }
 
+    /**
+     * Creation of the admin routes
+     * @param {function} app ExpressJS functions
+     * @returns Page
+     */
     #admin(app) {}
 }
 

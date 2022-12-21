@@ -7,12 +7,21 @@ const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
 
 class Post {
+    /**
+     * Init of all post routes
+     * @param {function} app ExpressJS functions
+     */
     init(app) {
         this.#public(app);
         this.#application(app);
         this.#admin(app);
     }
 
+    /**
+     * Creation of the public post routes
+     * @param {function} app ExpressJS functions
+     * @returns Page
+     */
     #public(app) {
         app.post('/register', (req, res) => {
             const { username, email, password, passwordConfirm, cgu } = req.body;
@@ -123,8 +132,9 @@ class Post {
     }
 
     /**
-     * Application post routes
-     * @param {function} app Express functions
+     * Creation of the application post routes
+     * @param {function} app ExpressJS functions
+     * @returns Page
      */
     #application(app) {
         app.post('/home/app/add-event', async (req, res) => {
@@ -214,6 +224,11 @@ class Post {
         });
     }
 
+    /**
+     * Creation of the admin post routes
+     * @param {function} app ExpressJS functions
+     * @returns Page
+     */
     #admin(app) {}
 }
 

@@ -1,10 +1,19 @@
 const axios = require('axios');
 
 class API {
+    /**
+     * Creation of the api routes
+     * @param {function} app ExpressJS functions
+     */
     init(app) {
         this.#geocode(app);
     }
 
+    /**
+     * Creation of the geocode get routes
+     * @param {function} app ExpressJS functions
+     * @returns Object
+     */
     #geocode(app) {
         app.get('/api/geocode', async (req, res) => {
             let queryString = req.query.q;
