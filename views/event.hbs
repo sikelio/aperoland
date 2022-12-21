@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/libs/bootstrap@5.2.3/bootstrap.min.css">
     <link rel="stylesheet" href="/libs/bootstrap-icons@1.10.2/bootstrap-icons.css">
-    <link rel="stylesheet" href="/libs/tom-select@2.2.2/tom-select.css">
+    <link rel="stylesheet" href="/libs/leaflet@1.9.3/leaflet.css">
     <link rel="stylesheet" href="/pages/event/event.css">
     <title>Aperoland - {{eventName}}</title>
 </head>
@@ -34,9 +34,16 @@
                     {{/if}}
                 </tbody>
             </table>
+            <div id="map"></div>
         </div>
     </main>
 
     <script src="/libs/bootstrap@5.2.3/bootstrap.bundle.min.js"></script>
+    <script src="/libs/leaflet@1.9.3/leaflet.js"></script>
+    <script src="/pages/app/app.js"></script>
+    <script>
+        const app = new App;
+        app.leafletMap('map', {{latitude}}, {{longitude}}, `{{eventName}}`);
+    </script>
 </body>
 </html>

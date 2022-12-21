@@ -2,10 +2,6 @@ main > .container {
     padding: 75px 15px 0;
 }
 
-.icon{
-	width: 3rem;
-}
-
-.item{
-	width: 100%;
+#map {
+	height: 500px;
 }

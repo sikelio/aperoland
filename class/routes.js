@@ -106,7 +106,15 @@ class Routes {
             }
         });
 
-        app.get('/app/event/:uuid', (req, res) => {
+        app.get('/app/event/:uuid', (req, res, next) => {
+            let sql = `
+                SELECT * FROM events
+                RIGHT JOIN 
+            `;
+            mysql.query(sql, async (error, results) => {})
+
+            next();
+        }, (req, res) => {
             if (req.cookies.aperolandTicket) {
                 let sql = `
                     SELECT * FROM events
@@ -136,7 +144,9 @@ class Routes {
                             navbar: components.appNavbar,
                             eventName: eventInfo.name,
                             organizer: eventInfo.username,
-                            participants: results
+                            participants: results,
+                            latitude: eventInfo.latitude,
+                            longitude: eventInfo.longitude,
                         });
                     });
                 });

@@ -1,9 +1,5 @@
 class App {
-    init(element) {
-        this.#modalsSelect(element);
-    }
-
-    #modalsSelect(element) {
+    modalsSelect(element) {
         new TomSelect(element, {
             valueField: 'label',
             labelField: 'label',
@@ -61,5 +57,18 @@ class App {
     #addressCallback(value, item) {
         document.getElementById('latitude').value = item.querySelectorAll('#lat')[0].innerText;
         document.getElementById('longitude').value = item.querySelectorAll('#long')[0].innerText;
+    }
+
+    leafletMap(element = 'map', latitude, longitude, eventName = '') {
+        var map = L.map(element).setView([latitude, longitude], 15);
+
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        L.marker(new L.LatLng(latitude, longitude))
+            .addTo(map)
+            .bindPopup(eventName);
     }
 }

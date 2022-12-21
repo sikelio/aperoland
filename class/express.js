@@ -20,7 +20,7 @@ class Express {
         files.init(this.#app);
         this.#app.set('view engine', 'hbs');
         this.#app.use(cors({
-            origin: ['https://api-adresse.data.gouv.fr', 'https://api.github.com']
+            origin: ['https://api-adresse.data.gouv.fr']
         }));
         this.#app.use(express.urlencoded({ extended: true }));
         this.#app.use(express.json());
