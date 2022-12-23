@@ -13,3 +13,4 @@ exports.joinEvent = fs.readFileSync(path.join(__dirname, '../components/app/moda
 
 // Errors
 exports.notFound = path.join(__dirname, '../components/errors/404.html');
+exports.internalError = path.join(__dirname, '../components/errors/500.html');

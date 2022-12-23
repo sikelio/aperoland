@@ -78,7 +78,11 @@ class Routes {
     #error(app) {
         app.get('/app/404', (req, res) => {
             return res.sendFile(components.notFound);
-        })
+        });
+
+        app.get('/app/500', (req, res) => {
+            return res.sendFile(components.internalError);
+        });
     }
 
     /**
@@ -95,7 +99,9 @@ class Routes {
                     );
 
                     mysql.query('SELECT username FROM users WHERE idUser = ?', [decoded.idUser], (error, results) => {
-                        if (error) {}
+                        if (error) {
+                            return res.redirect('/app/500');
+                        }
 
                         const sql = `
                             SELECT events.name, users.username, events.description, events.uuid FROM eventsparticipate
@@ -106,7 +112,7 @@ class Routes {
 
                         mysql.query(sql, [decoded.idUser], (error, results) => {
                             if (error) {
-                                // TODO
+                                return res.redirect('/app/500');
                             }
 
                             return res.render('app', {
@@ -138,7 +144,7 @@ class Routes {
 
             mysql.query(sql, req.params.uuid, async (error, results) => {
                 if (error) {
-                    // TODO
+                    return res.redirect('/app/500');
                 }
 
                 let isAllowed = false;
@@ -173,7 +179,7 @@ class Routes {
 
                 mysql.query(sql, req.params.uuid, (error, results) => {
                     if (error) {
-                        // TODO
+                        return res.redirect('/app/500');
                     }
 
                     const eventInfo = results[0];
@@ -186,7 +192,7 @@ class Routes {
 
                     mysql.query(sql, eventInfo.idEvent, (error, results) => {
                         if (error) {
-                            // TODO
+                            return res.redirect('/app/500');
                         }
 
                         return res.render('event', {
@@ -209,7 +215,39 @@ class Routes {
      * @param {function} app ExpressJS functions
      * @returns Page
      */
-    #admin(app) {}
+    #admin(app) {
+        app.get('/admin/users', async (req, res) => {
+            if (req.cookies.aperolandTicket) {
+                try {
+                    const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
+                        process.env.JWT_SECRET
+                    );
+
+                    if (decoded.role != 'Admin') {
+                        return res.redirect('/');
+                    }
+
+                    mysql.query('SELECT * FROM users WHERE role = \'User\'', (error, results) => {
+                        if (error) {
+                            console.error(error);
+                            return res.redirect('/app/500');
+                        }
+
+                        return res.render('users', {
+                            navbar: components.adminNavbar,
+                            users: results
+                        });
+                    });
+                } catch (error) {
+                    res.redirect('/')
+                }
+            } else {
+                return res.redirect('/');
+            }
+        });
+
+        app.get('/admin/events', (req, res) => {});
+    }
 }
 
 module.exports = Routes;

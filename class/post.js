@@ -38,7 +38,7 @@ class Post {
 
             mysql.query('SELECT * FROM users WHERE email = ?', [email], async (error, results) => {
                 if (error) {
-                    // TODO
+                    return res.redirect('/app/500');
                 }
 
                 if (results.length > 0) {
@@ -61,12 +61,7 @@ class Post {
 
                 mysql.query('INSERT INTO users SET ?', { username: username, email: email, password: hashedPassword }, (error, results) => {
                     if (error) {
-                        return res.render('register', {
-                            error: 'Une erreur s\'est produite',
-                            navbar: components.publicNavbar,
-                            projectName: info.displayName,
-                            currentYear: new Date().getFullYear()
-                        });
+                        return res.redirect('/app/500');
                     }
 
                     return res.render('register', {
@@ -104,13 +99,35 @@ class Post {
                         }
 
                         const idUser = results[0].idUser;
+                        const role = results[0].role;
+                        const ip = req.socket.remoteAddress.split(':')[3];
 
-                        const token = jwt.sign({ idUser }, process.env.JWT_SECRET, {
-                            expiresIn: process.env.JWT_EXPIRES_IN
+                        const date = new Date(), day = date.getDate(), month = date.getMonth(),
+                        year = date.getFullYear(), hours = date.getHours(), minutes = date.getMinutes(),
+                        seconds = date.getSeconds();
+
+                        const lastConnectionDate = `${year}-${month}-${day}`;
+                        const lastConnectionTime = `${hours}:${minutes}:${seconds}`;
+
+                        let sql = `
+                            UPDATE users SET
+                            lastIp = ?, lastConnectionDate = ?, lastConnectionTime = ?
+                            WHERE idUser = ?
+                        `;
+
+                        mysql.query(sql, [ip, lastConnectionDate, lastConnectionTime, idUser], (error, results) => {
+                            if (error) {
+                                console.error(error);
+                                return res.redirect('/app/500');
+                            }
+                            
+                            const token = jwt.sign({ idUser, role }, process.env.JWT_SECRET, {
+                                expiresIn: process.env.JWT_EXPIRES_IN
+                            });
+    
+                            res.cookie('aperolandTicket', token);
+                            res.redirect('/app/home');
                         });
-
-                        res.cookie('aperolandTicket', token);
-                        res.redirect('/app/home');
                     } catch (error) {
                         return res.render('login', {
                             warning: 'Une erreur s\'est produite',
@@ -157,7 +174,7 @@ class Post {
 
                 mysql.query('INSERT INTO events SET ?', values, (error, results) => {
                     if (error) {
-                        // TODO
+                        return res.redirect('/app/500');
                     }
 
                     const newValues = {
@@ -167,7 +184,7 @@ class Post {
 
                     mysql.query('INSERT INTO eventsparticipate SET ?', newValues, (error, results) => {
                         if (error) {
-                            // TODO
+                            return res.redirect('/app/500');
                         }
 
                         return res.redirect('/app/home');
@@ -181,7 +198,7 @@ class Post {
 
             mysql.query('SELECT * FROM events WHERE uuid = ?', uuid, (error, results) => {
                 if (error) {
-                    // TODO
+                    return res.redirect('/app/500');
                 }
 
                 const idEvent = results[0].idEvent;
@@ -192,7 +209,7 @@ class Post {
 
                 mysql.query('SELECT * FROM eventsparticipate WHERE idEvent = ?', idEvent, async (error, results) => {
                     if (error) {
-                        // TODO
+                        return res.redirect('/app/500');
                     }
 
                     try {
@@ -211,13 +228,13 @@ class Post {
 
                         mysql.query('INSERT INTO eventsparticipate SET ?', values, (error, results) => {
                             if (error) {
-                                // TODO
+                                return res.redirect('/app/500');
                             }
 
                             return res.redirect(`/app/event/${uuid}`);
                         });
                     } catch (error) {
-                        // TODO
+                        return res.redirect('/app/500');
                     }
                 });
             });
