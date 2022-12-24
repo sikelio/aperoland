@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/libs/bootstrap@5.2.3/bootstrap.min.css">
     <link rel="stylesheet" href="/libs/bootstrap-icons@1.10.2/bootstrap-icons.css">
-    <link rel="stylesheet" href="/pages/users/users.css">
-    <title>Aperoland - Users</title>
+    <link rel="stylesheet" href="/pages/events/events.css">
+    <title>Aperoland - Events</title>
 </head>
 <body>
     {{{navbar}}}
@@ -16,26 +16,22 @@
         <div class="container text-center">
             <table class="table mt-5">
                 <thead>
-                    <th scope="col">Pseudo</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">IP</th>
-                    <th scope="col">Date</th>
-                    <th scope="col">Heure</th>
+                    <th scope="col">Nom</th>
+                    <th scope="col">Organisateur</th>
+                    <th scope="col">Nombre de participants</th>
                 </thead>
                 <tbody>
-                    {{#if users}}
-                        {{#each users}}
+                    {{#if events}}
+                        {{#each events}}
                             <tr>
-                                <td>{{username}}</td>
+                                <td>{{name}}</td>
                                 <td>{{email}}</td>
-                                <td>{{lastIp}}</td>
-                                <td>{{lastConnectionDate}}</td>
-                                <td>{{lastConnectionTime}}</td>
+                                <td>Non disponible</td>
                             </tr>
                         {{/each}}
                     {{else}}
                         <tr>
-                            <td colspan="5">Aucun utilisateur</td>
+                            <td colspan="5">Aucun evènement</td>
                         </tr>
                     {{/if}}
                 </tbody>

@@ -115,8 +115,19 @@ class Routes {
                                 return res.redirect('/app/500');
                             }
 
+                            let navbar;
+
+                            switch (decoded.role) {
+                                case 'User':
+                                    navbar = components.appNavbar
+                                    break;
+                                case 'Admin':
+                                    navbar = components.adminNavbar;
+                                    break;
+                            }
+
                             return res.render('app', {
-                                navbar: components.appNavbar,
+                                navbar: navbar,
                                 addEvent: components.addEvent,
                                 joinEvent: components.joinEvent,
                                 eventsList: results
@@ -229,7 +240,6 @@ class Routes {
 
                     mysql.query('SELECT * FROM users WHERE role = \'User\'', (error, results) => {
                         if (error) {
-                            console.error(error);
                             return res.redirect('/app/500');
                         }
 
@@ -246,7 +256,62 @@ class Routes {
             }
         });
 
-        app.get('/admin/events', (req, res) => {});
+        app.get('/admin/events', async (req, res, next) => {
+            if (req.cookies.aperolandTicket) {
+                try {
+                    const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
+                        process.env.JWT_SECRET
+                    );
+
+                    if (decoded.role != 'Admin') {
+                        return res.redirect('/');
+                    }
+
+                    let sql = `
+                        SELECT * FROM events
+                        RIGHT JOIN users ON events.idUser = users.idUser
+                        WHERE events.idUser IS NOT NULL;
+                    `;
+
+                    mysql.query(sql, (error, results) => {
+                        if (error) {
+                            return res.redirect('/app/500');
+                        }
+
+                        let events = Array();
+
+                        results.forEach((element) => {
+                            console.error(element);
+
+                            sql = `
+                                SELECT COUNT (idUser) FROM eventsparticipate
+                                WHERE idEvent = ?
+                            `;
+
+                            mysql.query(sql, [element.idEvent], (error, results) => {
+                                if (error) {
+                                    return res.redirect('/app/500');
+                                }
+
+                                element.attendees = results[0]['COUNT (idUser)'];
+                                events.push(element);                                
+                            });
+                        });
+
+                        console.error(events);
+
+                        return res.render('events', {
+                            navbar: components.adminNavbar,
+                            events: results
+                        });
+                    });
+                } catch (error) {
+                    res.redirect('/')
+                }
+            } else {
+                return res.redirect('/');
+            }
+        });
     }
 }
 

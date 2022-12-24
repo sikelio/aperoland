@@ -102,11 +102,11 @@ class Post {
                         const role = results[0].role;
                         const ip = req.socket.remoteAddress.split(':')[3];
 
-                        const date = new Date(), day = date.getDate(), month = date.getMonth(),
+                        const date = new Date(), day = date.getDate(), month = date.getMonth() + 1,
                         year = date.getFullYear(), hours = date.getHours(), minutes = date.getMinutes(),
                         seconds = date.getSeconds();
 
-                        const lastConnectionDate = `${year}-${month}-${day}`;
+                        const lastConnectionDate = `${day}-${month}-${year}`;
                         const lastConnectionTime = `${hours}:${minutes}:${seconds}`;
 
                         let sql = `
