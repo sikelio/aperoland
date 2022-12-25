@@ -154,7 +154,7 @@ class Post {
      * @returns Page
      */
     #application(app) {
-        app.post('/home/app/add-event', async (req, res) => {
+        app.post('/app/home/add-event', async (req, res) => {
             const { name, description, address, latitude, longitude } = req.body;
 
             try {
@@ -193,7 +193,7 @@ class Post {
             } catch (error) {}
         });
 
-        app.post('/home/app/join-event', async (req, res) => {
+        app.post('/app/home/join-event', async (req, res) => {
             const { uuid } = req.body;
 
             mysql.query('SELECT * FROM events WHERE uuid = ?', uuid, (error, results) => {
@@ -246,7 +246,40 @@ class Post {
      * @param {function} app ExpressJS functions
      * @returns Page
      */
-    #admin(app) {}
+    #admin(app) {
+        app.post('/admin/quotes/add-quote', async (req, res) => {
+            if (req.cookies.aperolandTicket) {
+                try {
+                    const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
+                        process.env.JWT_SECRET
+                    );
+
+                    if (decoded.role != 'Admin') {
+                        return res.redirect('/');
+                    }
+
+                    const { name, quote } = req.body
+
+                    const values = {
+                        name: name,
+                        quote: quote
+                    };
+
+                    mysql.query('INSERT INTO quotes SET ?', values, (error, results) => {
+                        if (error) {
+                            return res.redirect('/app/500');
+                        }
+    
+                        return res.redirect('/admin/quotes');
+                    });
+                } catch (error) {
+                    return res.redirect('/');
+                }
+            } else {
+                return res.redirect('/');
+            }
+        })
+    }
 }
 
 module.exports = Post;

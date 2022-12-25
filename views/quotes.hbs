@@ -6,37 +6,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/libs/bootstrap@5.2.3/bootstrap.min.css">
     <link rel="stylesheet" href="/libs/bootstrap-icons@1.10.2/bootstrap-icons.css">
-    <link rel="stylesheet" href="/pages/users/users.css">
-    <title>Aperoland - Users</title>
+    <link rel="stylesheet" href="/pages/quotes/quotes.css">
+    <title>Aperoland - Quotes</title>
 </head>
 <body>
     {{{navbar}}}
 
     <main class="flex-shrink-0">
+        <div class="container control">
+            <div class="btn-group" role="group" aria-label="Basic example">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addQuote">Ajouter une citation</button>
+            </div>
+        </div>
+
         <div class="container">
             <div class="c-12">
                 <table class="table mt-5">
                     <thead>
-                        <th scope="col">Pseudo</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">IP</th>
-                        <th scope="col">Date</th>
-                        <th scope="col">Heure</th>
+                        <th scope="col">Nom</th>
+                        <th scope="col">Citation</th>
                     </thead>
                     <tbody>
-                        {{#if users}}
-                            {{#each users}}
+                        {{#if quotes}}
+                            {{#each quotes}}
                                 <tr>
-                                    <td>{{username}}</td>
-                                    <td>{{email}}</td>
-                                    <td>{{lastIp}}</td>
-                                    <td>{{lastConnectionDate}}</td>
-                                    <td>{{lastConnectionTime}}</td>
+                                    <td>{{name}}</td>
+                                    <td>{{quote}}</td>
                                 </tr>
                             {{/each}}
                         {{else}}
                             <tr>
-                                <td colspan="5">Aucun utilisateur</td>
+                                <td colspan="5">Aucune citation</td>
                             </tr>
                         {{/if}}
                     </tbody>
@@ -44,6 +44,8 @@
             </div>
         </div>
     </main>
+
+    {{{addQuote}}}
 
     <script src="/libs/bootstrap@5.2.3/bootstrap.bundle.min.js"></script>
 </body>

@@ -10,6 +10,7 @@ exports.adminNavbar = fs.readFileSync(path.join(__dirname, '../components/admin/
 exports.cgu = fs.readFileSync(path.join(__dirname, '../components/public/modals/cgu.html'));
 exports.addEvent = fs.readFileSync(path.join(__dirname, '../components/app/modals/addEvent.html'));
 exports.joinEvent = fs.readFileSync(path.join(__dirname, '../components/app/modals/joinEvent.html'));
+exports.addQuote = fs.readFileSync(path.join(__dirname, '../components/admin/modals/addQuote.html'));
 
 // Errors
 exports.notFound = path.join(__dirname, '../components/errors/404.html');

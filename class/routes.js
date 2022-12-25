@@ -36,8 +36,15 @@ class Routes {
                     return res.clearCookie('aperolandTicket');
                 }
             } else {
-                return res.render('home', {
-                    navbar: components.publicNavbar
+                mysql.query('SELECT * FROM quotes ORDER BY RAND ( ) LIMIT 1', (error, results) => {
+                    if (error) {
+                        return res.redirect('/app/500');
+                    }
+
+                    return res.render('home', {
+                        navbar: components.publicNavbar,
+                        quote: results[0].quote
+                    });
                 });
             }
         });
@@ -46,21 +53,45 @@ class Routes {
             res.sendFile(path.join(__dirname, '../pages/public/favicon.ico'));
         });
 
-        app.get('/register', (req, res) => {
-            res.render('register', {
-                navbar: components.publicNavbar,
-                projectName: info.displayName,
-                cgu: components.cgu,
-                currentYear: new Date().getFullYear()
-            });
+        app.get('/register', async (req, res) => {
+            if (req.cookies.aperolandTicket) {
+                try {
+                    const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
+                        process.env.JWT_SECRET
+                    );
+
+                    return res.redirect('/app/home');
+                } catch (error) {
+                    return res.clearCookie('aperolandTicket');
+                }
+            } else {
+                return res.render('register', {
+                    navbar: components.publicNavbar,
+                    projectName: info.displayName,
+                    cgu: components.cgu,
+                    currentYear: new Date().getFullYear()
+                });
+            }
         });
 
-        app.get('/login', (req, res) => {
-            res.render('login', {
-                navbar: components.publicNavbar,
-                projectName: info.displayName,
-                currentYear: new Date().getFullYear()
-            });
+        app.get('/login', async (req, res) => {
+            if (req.cookies.aperolandTicket) {
+                try {
+                    const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
+                        process.env.JWT_SECRET
+                    );
+
+                    return res.redirect('/app/home');
+                } catch (error) {
+                    return res.clearCookie('aperolandTicket');
+                }
+            } else {
+                return res.render('login', {
+                    navbar: components.publicNavbar,
+                    projectName: info.displayName,
+                    currentYear: new Date().getFullYear()
+                });
+            }
         });
 
         app.post('/logout', (req, res) => {
@@ -104,9 +135,11 @@ class Routes {
                         }
 
                         const sql = `
-                            SELECT events.name, users.username, events.description, events.uuid FROM eventsparticipate
+                            SELECT events.name, events.description, events.uuid, events.idUser, usr.username
+                            FROM eventsparticipate
                             RIGHT JOIN events ON eventsparticipate.idEvent = events.idEvent
                             RIGHT JOIN users ON eventsparticipate.idUser = users.idUser
+                            RIGHT JOIN users AS usr ON usr.idUser = events.idUser
                             WHERE eventsparticipate.idUser = ?
                         `;
 
@@ -115,19 +148,8 @@ class Routes {
                                 return res.redirect('/app/500');
                             }
 
-                            let navbar;
-
-                            switch (decoded.role) {
-                                case 'User':
-                                    navbar = components.appNavbar
-                                    break;
-                                case 'Admin':
-                                    navbar = components.adminNavbar;
-                                    break;
-                            }
-
                             return res.render('app', {
-                                navbar: navbar,
+                                navbar: this.#getNavbar(decoded.role),
                                 addEvent: components.addEvent,
                                 joinEvent: components.joinEvent,
                                 eventsList: results
@@ -201,20 +223,28 @@ class Routes {
                         WHERE idEvent = ?
                     `;
 
-                    mysql.query(sql, eventInfo.idEvent, (error, results) => {
+                    mysql.query(sql, eventInfo.idEvent, async (error, results) => {
                         if (error) {
                             return res.redirect('/app/500');
                         }
 
-                        return res.render('event', {
-                            navbar: components.appNavbar,
-                            eventName: eventInfo.name,
-                            organizer: eventInfo.username,
-                            description: eventInfo.description,
-                            participants: results,
-                            latitude: eventInfo.latitude,
-                            longitude: eventInfo.longitude,
-                        });
+                        try {
+                            const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
+                                process.env.JWT_SECRET
+                            );
+
+                            return res.render('event', {
+                                navbar: this.#getNavbar(decoded.role),
+                                eventName: eventInfo.name,
+                                organizer: eventInfo.username,
+                                description: eventInfo.description,
+                                participants: results,
+                                latitude: eventInfo.latitude,
+                                longitude: eventInfo.longitude,
+                            });
+                        } catch (error) {
+                            return res.redirect('/app/500');
+                        }
                     });
                 });
             }
@@ -256,7 +286,39 @@ class Routes {
             }
         });
 
+        app.get('/admin/quotes', async (req, res) => {
+            if (req.cookies.aperolandTicket) {
+                try {
+                    const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
+                        process.env.JWT_SECRET
+                    );
+
+                    if (decoded.role != 'Admin') {
+                        return res.redirect('/');
+                    }
+
+                    mysql.query('SELECT * FROM quotes', (error, results) => {
+                        if (error) {
+                            return res.redirect('/app/500');
+                        }
+
+                        return res.render('quotes', {
+                            navbar: components.adminNavbar,
+                            quotes: results,
+                            addQuote: components.addQuote
+                        });
+                    });
+                } catch (error) {
+                    res.redirect('/')
+                }
+            } else {
+                return res.redirect('/');
+            }
+        });
+
         app.get('/admin/events', async (req, res, next) => {
+            console.error(req);
+
             if (req.cookies.aperolandTicket) {
                 try {
                     const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
@@ -268,37 +330,23 @@ class Routes {
                     }
 
                     let sql = `
-                        SELECT * FROM events
+                        SELECT events.*,
+                        (SELECT COUNT(idUser) FROM eventsparticipate WHERE events.idEvent = eventsparticipate.idEvent)
+                        AS attendees FROM events
                         RIGHT JOIN users ON events.idUser = users.idUser
                         WHERE events.idUser IS NOT NULL;
                     `;
+
+                    // let sql = `
+                    //     SELECT * FROM events
+                    //     RIGHT JOIN users ON events.idUser = users.idUser
+                    //     WHERE events.idUser IS NOT NULL;
+                    // `;
 
                     mysql.query(sql, (error, results) => {
                         if (error) {
                             return res.redirect('/app/500');
                         }
-
-                        let events = Array();
-
-                        results.forEach((element) => {
-                            console.error(element);
-
-                            sql = `
-                                SELECT COUNT (idUser) FROM eventsparticipate
-                                WHERE idEvent = ?
-                            `;
-
-                            mysql.query(sql, [element.idEvent], (error, results) => {
-                                if (error) {
-                                    return res.redirect('/app/500');
-                                }
-
-                                element.attendees = results[0]['COUNT (idUser)'];
-                                events.push(element);                                
-                            });
-                        });
-
-                        console.error(events);
 
                         return res.render('events', {
                             navbar: components.adminNavbar,
@@ -312,6 +360,26 @@ class Routes {
                 return res.redirect('/');
             }
         });
+    }
+
+    /**
+     * Get the navbar following the user role
+     * @param {string} role User role
+     * @returns Navbar
+     */
+    #getNavbar(role) {
+        let navbar;
+
+        switch (role) {
+            case 'User':
+                navbar = components.appNavbar
+                break;
+            case 'Admin':
+                navbar = components.adminNavbar;
+                break;
+        }
+
+        return navbar;
     }
 }
 
