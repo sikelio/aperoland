@@ -13,29 +13,31 @@
     {{{navbar}}}
 
     <main class="flex-shrink-0">
-        <div class="container text-center">
-            <table class="table mt-5">
-                <thead>
-                    <th scope="col">Nom</th>
-                    <th scope="col">Organisateur</th>
-                    <th scope="col">Nombre de participants</th>
-                </thead>
-                <tbody>
-                    {{#if events}}
-                        {{#each events}}
+        <div class="container">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12 table-responsive">
+                <table class="table mt-5">
+                    <thead>
+                        <th scope="col">Nom</th>
+                        <th scope="col">Organisateur</th>
+                        <th scope="col">Nombre de participants</th>
+                    </thead>
+                    <tbody>
+                        {{#if events}}
+                            {{#each events}}
+                                <tr>
+                                    <td>{{name}}</td>
+                                    <td>{{email}}</td>
+                                    <td>{{attendees}}</td>
+                                </tr>
+                            {{/each}}
+                        {{else}}
                             <tr>
-                                <td>{{name}}</td>
-                                <td>{{email}}</td>
-                                <td>{{attendees}}</td>
+                                <td colspan="5">Aucun evènement</td>
                             </tr>
-                        {{/each}}
-                    {{else}}
-                        <tr>
-                            <td colspan="5">Aucun evènement</td>
-                        </tr>
-                    {{/if}}
-                </tbody>
-            </table>
+                        {{/if}}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </main>
 

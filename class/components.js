@@ -1,6 +1,11 @@
 const fs = require('fs');
 const path = require('path');
 
+/**
+ * Here are the export of static HTML files
+ * like modals, errors pages, etc...
+ */
+
 // Navbars
 exports.publicNavbar = fs.readFileSync(path.join(__dirname, '../components/public/navbar.html'));
 exports.appNavbar = fs.readFileSync(path.join(__dirname, '../components/app/navbar.html'));
@@ -11,6 +16,8 @@ exports.cgu = fs.readFileSync(path.join(__dirname, '../components/public/modals/
 exports.addEvent = fs.readFileSync(path.join(__dirname, '../components/app/modals/addEvent.html'));
 exports.joinEvent = fs.readFileSync(path.join(__dirname, '../components/app/modals/joinEvent.html'));
 exports.addQuote = fs.readFileSync(path.join(__dirname, '../components/admin/modals/addQuote.html'));
+exports.confirmDeleteUser = fs.readFileSync(path.join(__dirname, '../components/admin/modals/confirmDeleteUser.html'));
+exports.deleteUser = fs.readFileSync(path.join(__dirname, '../components/app/modals/deleteUser.html'));
 
 // Errors
 exports.notFound = path.join(__dirname, '../components/errors/404.html');

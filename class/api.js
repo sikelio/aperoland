@@ -11,8 +11,11 @@ class API {
 
     /**
      * Creation of the geocode get routes
+     * When the client side js makes a resquest to this URL,
+     * the server side js makes a request to the french governement
+     * geocode public api
      * @param {function} app ExpressJS functions
-     * @returns Object
+     * @returns {array}
      */
     #geocode(app) {
         app.get('/api/geocode', async (req, res) => {

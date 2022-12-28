@@ -14,29 +14,44 @@
 
     <main class="flex-shrink-0">
         <div class="container">
-            <div class="c-12">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12 table-responsive">
                 <table class="table mt-5">
                     <thead>
+                        <th scope="col">#</th>
                         <th scope="col">Pseudo</th>
                         <th scope="col">Email</th>
                         <th scope="col">IP</th>
                         <th scope="col">Date</th>
                         <th scope="col">Heure</th>
+                        <th scope="col">Vérifié ?</th>
                     </thead>
                     <tbody>
                         {{#if users}}
                             {{#each users}}
                                 <tr>
-                                    <td>{{username}}</td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger btn-delete" data-user="{{idUser}}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </td>
+                                    <td class="username">{{username}}</td>
                                     <td>{{email}}</td>
                                     <td>{{lastIp}}</td>
                                     <td>{{lastConnectionDate}}</td>
                                     <td>{{lastConnectionTime}}</td>
+                                    <td>
+                                        {{#ifEquals isConfirmed 'Yes'}}
+                                            Oui
+                                        {{/ifEquals}}
+                                        {{#ifEquals isConfirmed 'No'}}
+                                            Non
+                                        {{/ifEquals}}
+                                    </td>
                                 </tr>
                             {{/each}}
                         {{else}}
                             <tr>
-                                <td colspan="5">Aucun utilisateur</td>
+                                <td colspan="6" class="text-center">Aucun utilisateur</td>
                             </tr>
                         {{/if}}
                     </tbody>
@@ -45,6 +60,14 @@
         </div>
     </main>
 
+    {{{confirmDeleteUser}}}
+
     <script src="/libs/bootstrap@5.2.3/bootstrap.bundle.min.js"></script>
+    <script src="/libs/axios/axios.min.js"></script>
+    <script src="/pages/users/users.js"></script>
+    <script>
+        const users = new Users;
+        users.init();
+    </script>
 </body>
 </html>

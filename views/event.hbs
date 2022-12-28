@@ -14,35 +14,71 @@
     {{{navbar}}}
 
     <main class="flex-shrink-0">
-        <div class="container text-center">
-            <h3 class="">{{eventName}}</h3>
-            <span>Description : </span>
-            <span class="fst-italic">{{description}}</span>
-            <br>
-            <span>organisé par : </span>
-            <span class="fst-italic">{{organizer}}</span>
+        <div class="container">
+            <div class="text-center">
+                <h3 class="">{{eventName}}</h3>
+                <span>Description : </span>
+                <span class="fst-italic">{{description}}</span>
+                <br>
+                <span>organisé par : </span>
+                <span class="fst-italic">{{organizer}}</span>
+            </div>
 
-            <table class="table mt-5">
-                <thead>
-                    <th scope="col">Participants</th>
-                    <th scope="col">Email</th>
-                </thead>
-                <tbody>
-                    {{#if participants}}
-                        {{#each participants}}
-                            <tr>
-                                <td>{{username}}</td>
-                                <td>{{email}}</td>
-                            </tr>
-                        {{/each}}
-                    {{else}}
-                        <td>Aucun participant</td>
-                    {{/if}}
-                </tbody>
-            </table>
-            <div id="map"></div>
+            {{#if isOrganizer}}
+                <div class="btn-group mt-5" role="group" aria-label="Basic example">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editEvent">Modifier l'apéro</button>
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteEvent">Supprimer l'apéro</button>
+                </div>
+            {{/if}}
+
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12 table-responsive">
+                <table class="table mt-2">
+                    <thead>
+                        {{#if isOrganizer}}
+                            <th scope="col">#</th>
+                        {{/if}}
+                        <th scope="col">Participants</th>
+                        <th scope="col">Email</th>
+                    </thead>
+                    <tbody>
+                        {{#if participants}}
+                            {{#each participants}}
+                                <tr>
+                                    {{#ifEquals status 'Organizer'}}
+                                        {{#if ../isOrganizer}}
+                                            <td></td>
+                                        {{/if}}
+                                        <td>
+                                            <i class="bi bi-star"></i>
+                                            {{username}}
+                                        </td>
+                                    {{/ifEquals}}
+                                    {{#ifEquals status 'Participant'}}
+                                        {{#if ../isOrganizer}}
+                                            <td>
+                                                <button type="button" class="btn btn-danger btn-delete" data-user="{{idUser}}">
+                                                    <i class="bi bi-person-x"></i>
+                                                </button>
+                                            </td>
+                                        {{/if}}
+                                        <td class="username">{{username}}</td>
+                                    {{/ifEquals}}
+                                    <td>{{email}}</td>
+                                </tr>
+                            {{/each}}
+                        {{else}}
+                            <td>Aucun participant</td>
+                        {{/if}}
+                    </tbody>
+                </table>
+                </div>
+            <div class="mb-3" id="map"></div>
         </div>
     </main>
+
+    {{{editEvent}}}
+    {{{deleteEvent}}}
+    {{{deleteUser}}}
 
     <script src="/libs/bootstrap@5.2.3/bootstrap.bundle.min.js"></script>
     <script src="/libs/leaflet@1.9.3/leaflet.js"></script>
@@ -50,6 +86,9 @@
     <script>
         const app = new App;
         app.leafletMap('map', {{latitude}}, {{longitude}}, `{{eventName}}`);
+        {{#if isOrganizer}}
+            app.deleteUserButton()
+        {{/if}}
     </script>
 </body>
 </html>

@@ -1,7 +1,8 @@
 require('dotenv').config();
 const components = require('./components');
 const info = require('../package.json');
-const mysql = require('./mysql');
+const logger = require('../config/logger');
+const mysql = require('../config/mysql');
 const jwt = require('jsonwebtoken');
 const path = require('path');
 const { promisify } = require('util');
@@ -20,10 +21,12 @@ class Routes {
 
     /**
      * Creation of the public routes
+     * This routes are accesible from anyone without a login cookie
      * @param {function} app ExpressJS functions
-     * @returns Page
+     * @returns {void} Page
      */
     #public(app) {
+        // Root page
         app.get('/', async (req, res) => {
             if (req.cookies.aperolandTicket) {
                 try {
@@ -41,6 +44,12 @@ class Routes {
                         return res.redirect('/app/500');
                     }
 
+                    if (results.length == 0) {
+                        return res.render('home', {
+                            navbar: components.publicNavbar
+                        });
+                    }
+
                     return res.render('home', {
                         navbar: components.publicNavbar,
                         quote: results[0].quote
@@ -49,10 +58,12 @@ class Routes {
             }
         });
 
+        // Return the favicon for all routes
         app.get('/favicon.ico', (req, res) => {
             res.sendFile(path.join(__dirname, '../pages/public/favicon.ico'));
         });
 
+        // Register page
         app.get('/register', async (req, res) => {
             if (req.cookies.aperolandTicket) {
                 try {
@@ -74,6 +85,7 @@ class Routes {
             }
         });
 
+        // Login page
         app.get('/login', async (req, res) => {
             if (req.cookies.aperolandTicket) {
                 try {
@@ -94,23 +106,56 @@ class Routes {
             }
         });
 
+        // Logout code
         app.post('/logout', (req, res) => {
             res.clearCookie('aperolandTicket');
 
             return res.redirect('/');
+        });
+
+        // Registration confirm page
+        app.get('/confirm/:confirmationToken', (req, res) => {
+            const confirmationToken = req.params.confirmationToken;
+
+            mysql.query('SELECT * FROM users WHERE confirmationToken = ?', confirmationToken, async (error, results) => {
+                if (error) {
+                    return res.redirect('/app/500');
+                }
+
+                if (results.length != 1) {
+                    return res.redirect('/');
+                }
+
+                try {
+                    const decoded = await promisify(jwt.verify)(confirmationToken, process.env.JWT_SECRET);
+                    console.error(decoded);
+    
+                    mysql.query('UPDATE users SET isConfirmed = \'Yes\', confirmationToken = NULL WHERE idUser = ?', decoded.idUser, (error, results) => {
+                        if (error) {
+                            return res.redirect('/app/500');
+                        }
+    
+                        return res.render('confirmation');
+                    });
+                } catch (error) {
+                    return res.redirect('/');
+                }
+            });
         });
     }
 
     /**
      * Creation of the errors code routes
      * @param {function} app ExpressJS functions
-     * @returns Page
+     * @returns {void} Page
      */
     #error(app) {
+        // ERROR 404
         app.get('/app/404', (req, res) => {
             return res.sendFile(components.notFound);
         });
 
+        // ERROR 500
         app.get('/app/500', (req, res) => {
             return res.sendFile(components.internalError);
         });
@@ -118,6 +163,7 @@ class Routes {
 
     /**
      * Creation of the application routes
+     * This routes are only accesible if the user has a login cookie
      * @param {function} app ExpressJS functions
      * @returns Page
      */
@@ -233,14 +279,23 @@ class Routes {
                                 process.env.JWT_SECRET
                             );
 
+                            let isOrganizer = false;
+
+                            if (decoded.idUser == eventInfo.idUser) {
+                                console.error('Organizer');
+                                isOrganizer = true;
+                            }
+
                             return res.render('event', {
                                 navbar: this.#getNavbar(decoded.role),
                                 eventName: eventInfo.name,
                                 organizer: eventInfo.username,
                                 description: eventInfo.description,
+                                isOrganizer: isOrganizer,
                                 participants: results,
                                 latitude: eventInfo.latitude,
                                 longitude: eventInfo.longitude,
+                                deleteUser: components.deleteUser,
                             });
                         } catch (error) {
                             return res.redirect('/app/500');
@@ -253,10 +308,13 @@ class Routes {
 
     /**
      * Creation of the admin routes
+     * This routes are only accesible if the user has a login cookie
+     * and only if the user has the admin role
      * @param {function} app ExpressJS functions
      * @returns Page
      */
     #admin(app) {
+        // User list page
         app.get('/admin/users', async (req, res) => {
             if (req.cookies.aperolandTicket) {
                 try {
@@ -275,7 +333,8 @@ class Routes {
 
                         return res.render('users', {
                             navbar: components.adminNavbar,
-                            users: results
+                            users: results,
+                            confirmDeleteUser: components.confirmDeleteUser
                         });
                     });
                 } catch (error) {
@@ -286,6 +345,7 @@ class Routes {
             }
         });
 
+        // Quotes list page
         app.get('/admin/quotes', async (req, res) => {
             if (req.cookies.aperolandTicket) {
                 try {
@@ -316,9 +376,8 @@ class Routes {
             }
         });
 
+        // Events list page
         app.get('/admin/events', async (req, res, next) => {
-            console.error(req);
-
             if (req.cookies.aperolandTicket) {
                 try {
                     const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
@@ -330,18 +389,11 @@ class Routes {
                     }
 
                     let sql = `
-                        SELECT events.*,
-                        (SELECT COUNT(idUser) FROM eventsparticipate WHERE events.idEvent = eventsparticipate.idEvent)
-                        AS attendees FROM events
-                        RIGHT JOIN users ON events.idUser = users.idUser
-                        WHERE events.idUser IS NOT NULL;
+                        SELECT E.idEvent, E.idUser, E.name, U.email, COUNT(EP.idUser) AS attendees FROM events AS E
+                        RIGHT JOIN users AS U ON E.idUser = U.idUser
+                        RIGHT JOIN (select * from eventsparticipate) AS EP ON EP.idEvent = E.idEvent
+                        GROUP BY E.idEvent
                     `;
-
-                    // let sql = `
-                    //     SELECT * FROM events
-                    //     RIGHT JOIN users ON events.idUser = users.idUser
-                    //     WHERE events.idUser IS NOT NULL;
-                    // `;
 
                     mysql.query(sql, (error, results) => {
                         if (error) {
@@ -365,7 +417,7 @@ class Routes {
     /**
      * Get the navbar following the user role
      * @param {string} role User role
-     * @returns Navbar
+     * @returns {element}
      */
     #getNavbar(role) {
         let navbar;
