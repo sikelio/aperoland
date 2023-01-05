@@ -13,6 +13,7 @@ class Post {
     /**
      * Init of all post routes
      * @param {function} app ExpressJS functions
+     * @returns {void}
      */
     init(app) {
         this.#public(app);
@@ -23,7 +24,7 @@ class Post {
     /**
      * Creation of the public post routes
      * @param {function} app ExpressJS functions
-     * @returns Page
+     * @returns {void} Page
      */
     #public(app) {
         app.post('/register', (req, res) => {
@@ -128,7 +129,7 @@ class Post {
 
                         const idUser = results[0].idUser;
                         const role = results[0].role;
-                        const ip = req.socket.remoteAddress.split(':')[3];
+                        const ip = req.ip.split(':')[3];
 
                         const date = new Date(), day = date.getDate(), month = date.getMonth() + 1,
                         year = date.getFullYear(), hours = date.getHours(), minutes = date.getMinutes(),
@@ -145,7 +146,6 @@ class Post {
 
                         mysql.query(sql, [ip, lastConnectionDate, lastConnectionTime, idUser], (error, results) => {
                             if (error) {
-                                console.error(error);
                                 return res.redirect('/app/500');
                             }
                             
@@ -179,9 +179,10 @@ class Post {
     /**
      * Creation of the application post routes
      * @param {function} app ExpressJS functions
-     * @returns Page
+     * @returns {void} Page
      */
     #application(app) {
+        // Post route for creation of an event
         app.post('/app/home/add-event', async (req, res) => {
             const { name, description, address, latitude, longitude } = req.body;
 
@@ -222,6 +223,7 @@ class Post {
             } catch (error) {}
         });
 
+        // Post route for joining an event
         app.post('/app/home/join-event', async (req, res) => {
             const { uuid } = req.body;
 
@@ -246,21 +248,31 @@ class Post {
                             process.env.JWT_SECRET
                         );
 
-                        if (results[0].idUser == decoded.idUser) {
-                            return res.redirect('/app/home');
-                        }
+                        let sql = `
+                            SELECT * FROM eventsparticipate WHERE idUser = ? AND idEvent = ?
+                        `;
 
-                        const values = {
-                            idEvent: results[0].idEvent,
-                            idUser: decoded.idUser
-                        };
-
-                        mysql.query('INSERT INTO eventsparticipate SET ?', values, (error, results) => {
+                        mysql.query(sql, [decoded.idUser, idEvent], (error, results) => {
                             if (error) {
                                 return res.redirect('/app/500');
                             }
 
-                            return res.redirect(`/app/event/${uuid}`);
+                            if (results.length > 0) {
+                                return res.redirect('/app/home');
+                            }
+
+                            const values = {
+                                idEvent: idEvent,
+                                idUser: decoded.idUser
+                            };
+    
+                            mysql.query('INSERT INTO eventsparticipate SET ?', values, (error, results) => {
+                                if (error) {
+                                    return res.redirect('/app/500');
+                                }
+    
+                                return res.redirect(`/app/event/${idEvent}`);
+                            });
                         });
                     } catch (error) {
                         return res.redirect('/app/500');
@@ -268,12 +280,60 @@ class Post {
                 });
             });
         });
+
+        // Post route for deleting an user form an event
+        app.post('/app/event/delete-user', async (req, res) => {
+            const { idUser, idEvent } = req.body;
+
+            try {
+                const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
+                    process.env.JWT_SECRET
+                );
+
+                let sql = `
+                    SELECT * FROM eventsparticipate
+                    WHERE idEvent = ? AND idUser = ?
+                `;
+
+                mysql.query(sql, [idEvent, decoded.idUser], (error, results) => {
+                    if (error) {
+                        return res.redirect('/app/500');
+                    }
+
+                    if (results[0].status != 'Organizer') {
+                        return res.redirect('/app/500');
+                    }
+
+                    sql = `
+                        DELETE FROM eventsparticipate
+                        WHERE idUser = ? AND idEvent = ?
+                    `;
+
+                    mysql.query(sql, [idUser, idEvent], (error, results) => {
+                        if (error) {
+                            return res.redirect('/app/500');
+                        }
+
+                        let referer = req.headers.referer;
+                        let parser = referer.split('/');
+
+                        return res.redirect(`/app/event/${parser[5]}`);
+                    });
+                });
+            } catch (error) {
+                return res.redirect('/');
+            }
+        });
+
+        app.post('/app/event/:idEvent/edit-event', (req, res) => {
+            res.send('hello');
+        });
     }
 
     /**
      * Creation of the admin post routes
      * @param {function} app ExpressJS functions
-     * @returns Page
+     * @returns {void} Page
      */
     #admin(app) {
         app.post('/admin/quotes/add-quote', async (req, res) => {
@@ -323,7 +383,6 @@ class Post {
                     const { idUser } = req.body;
 
                     if (!idUser || isNaN(idUser)) {
-                        console.error('test');
                         return res.redirect('/admin/users');
                     }
         

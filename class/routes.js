@@ -128,8 +128,7 @@ class Routes {
 
                 try {
                     const decoded = await promisify(jwt.verify)(confirmationToken, process.env.JWT_SECRET);
-                    console.error(decoded);
-    
+
                     mysql.query('UPDATE users SET isConfirmed = \'Yes\', confirmationToken = NULL WHERE idUser = ?', decoded.idUser, (error, results) => {
                         if (error) {
                             return res.redirect('/app/500');
@@ -181,7 +180,7 @@ class Routes {
                         }
 
                         const sql = `
-                            SELECT events.name, events.description, events.uuid, events.idUser, usr.username
+                            SELECT events.name, events.description, events.idEvent, events.idUser, usr.username
                             FROM eventsparticipate
                             RIGHT JOIN events ON eventsparticipate.idEvent = events.idEvent
                             RIGHT JOIN users ON eventsparticipate.idUser = users.idUser
@@ -214,14 +213,14 @@ class Routes {
             }
         });
 
-        app.get('/app/event/:uuid', (req, res, next) => {
+        app.get('/app/event/:idEvent', (req, res, next) => {
             let sql = `
                 SELECT eventsparticipate.idUser FROM events
                 RIGHT JOIN eventsparticipate ON events.idEvent = eventsparticipate.idEvent
-                WHERE events.uuid = ?
+                WHERE events.idEvent = ?
             `;
 
-            mysql.query(sql, req.params.uuid, async (error, results) => {
+            mysql.query(sql, req.params.idEvent, async (error, results) => {
                 if (error) {
                     return res.redirect('/app/500');
                 }
@@ -253,10 +252,10 @@ class Routes {
                 let sql = `
                     SELECT * FROM events
                     RIGHT JOIN users ON events.idUser = users.idUser
-                    WHERE uuid = ?
+                    WHERE idEvent = ?
                 `;
 
-                mysql.query(sql, req.params.uuid, (error, results) => {
+                mysql.query(sql, req.params.idEvent, (error, results) => {
                     if (error) {
                         return res.redirect('/app/500');
                     }
@@ -282,7 +281,6 @@ class Routes {
                             let isOrganizer = false;
 
                             if (decoded.idUser == eventInfo.idUser) {
-                                console.error('Organizer');
                                 isOrganizer = true;
                             }
 
@@ -292,10 +290,12 @@ class Routes {
                                 organizer: eventInfo.username,
                                 description: eventInfo.description,
                                 isOrganizer: isOrganizer,
+                                uuid: eventInfo.uuid,
                                 participants: results,
                                 latitude: eventInfo.latitude,
                                 longitude: eventInfo.longitude,
                                 deleteUser: components.deleteUser,
+                                idEvent: eventInfo.idEvent
                             });
                         } catch (error) {
                             return res.redirect('/app/500');

@@ -1,7 +1,7 @@
 <div class="modal fade" id="deleteUser" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form action="/app/events/delete-user" method="post">
+            <form action="/app/event/delete-user" method="post">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="staticBackdropLabel">Confirmation de suppression</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -15,6 +15,7 @@
                     </div>
                     <div class="mb-3 d-none">
                         <input type="number" class="form-control" id="idUser" placeholder="ID de l'utilisateur" name="idUser" min="1" required>
+                        <input type="number" class="form-control" id="idEvent" placeholder="ID de l'évenement" name="idEvent" min="1" required>
                     </div>
                 </div>
                 <div class="modal-footer">

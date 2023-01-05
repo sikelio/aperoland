@@ -22,11 +22,16 @@
                 <br>
                 <span>organisé par : </span>
                 <span class="fst-italic">{{organizer}}</span>
+                {{#if isOrganizer}}
+                    <br>
+                    <span>Code : </span>
+                    <span class="fst-italic">{{uuid}}</span>
+                {{/if}}
             </div>
 
             {{#if isOrganizer}}
                 <div class="btn-group mt-5" role="group" aria-label="Basic example">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editEvent">Modifier l'apéro</button>
+                    <button type="button" class="btn btn-primary" id="editEvent">Modifier l'apéro</button>
                     <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteEvent">Supprimer l'apéro</button>
                 </div>
             {{/if}}
@@ -56,8 +61,8 @@
                                     {{#ifEquals status 'Participant'}}
                                         {{#if ../isOrganizer}}
                                             <td>
-                                                <button type="button" class="btn btn-danger btn-delete" data-user="{{idUser}}">
-                                                    <i class="bi bi-person-x"></i>
+                                                <button type="button" class="btn btn-danger btn-delete" data-user="{{idUser}}" data-event="{{idEvent}}">
+                                                    <i class="bi bi-person-x" data-user="{{idUser}}"></i>
                                                 </button>
                                             </td>
                                         {{/if}}
@@ -86,9 +91,16 @@
     <script>
         const app = new App;
         app.leafletMap('map', {{latitude}}, {{longitude}}, `{{eventName}}`);
-        {{#if isOrganizer}}
-            app.deleteUserButton()
-        {{/if}}
     </script>
+    {{#if isOrganizer}}
+        <script src="/pages/event/event.js"></script>
+    {{/if}}
+    {{#if isOrganizer}}
+        <script>
+            const eventManager = new EventManager;
+            eventManager.deleteUserButton();
+            eventManager.editEventButton({{idEvent}});
+        </script>
+    {{/if}}
 </body>
 </html>

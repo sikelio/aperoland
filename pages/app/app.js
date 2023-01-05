@@ -20,7 +20,7 @@ class App {
                     .then(response => response.json())
                     .then(json => {
                         callback(json);
-                    }).catch(()=>{
+                    }).catch(() => {
                         callback();
                     });
             },
@@ -87,36 +87,5 @@ class App {
         L.marker(new L.LatLng(latitude, longitude))
             .addTo(map)
             .bindPopup(eventName);
-    }
-
-    deleteUserButton() {
-        const deleteButtons = document.getElementsByClassName('btn-delete');
-        const deleteUser = document.getElementById('deleteUser');
-        
-        for (let i = 0; i < deleteButtons.length; i++) {
-            deleteButtons[i].addEventListener('click', (e) => {
-                let idUser;
-                let username;
-
-                switch (e.target.nodeName) {
-                    case 'BUTTON':
-                        idUser = e.target.dataset.user;
-                        username = e.target.parentElement.parentElement.querySelector('.username').innerHTML;
-                        break;
-                    case 'I':
-                        idUser = e.target.parentElement.dataset.user;
-                        username = e.target.parentElement.parentElement.parentElement.querySelector('.username').innerHTML;
-                        break;
-                    default:
-                        return;
-                        break;
-                }
-
-                let deleteUserModal = new bootstrap.Modal(deleteUser);
-                deleteUserModal.show();
-                deleteUserModal['_element'].querySelector('#deletedUser').innerHTML = username;
-                deleteUserModal['_element'].querySelector('#idUser').value = idUser;
-            });
-        }
     }
 }
