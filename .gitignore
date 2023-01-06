@@ -1,3 +1,7 @@
+# Config file
 .env
+
+# Folders
+calendar
 logs
 node_modules

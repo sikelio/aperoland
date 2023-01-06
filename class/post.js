@@ -6,8 +6,10 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
 
-// const Mail = require('./mail');
-// const mail = new Mail;
+const Calendar = require('./calendar');
+const Mail = require('./mail');
+const calendar = new Calendar;
+const mail = new Mail;
 
 class Post {
     /**
@@ -42,7 +44,7 @@ class Post {
 
             mysql.query('SELECT * FROM users WHERE email = ?', [email], async (error, results) => {
                 if (error) {
-                    return res.redirect('/app/500');
+                    return res.redirect('/internal-error');
                 }
 
                 if (results.length > 0) {
@@ -67,7 +69,7 @@ class Post {
 
                 mysql.query('INSERT INTO users SET ?', { username: username, email: email, password: hashedPassword }, (error, results) => {
                     if (error) {
-                        return res.redirect('/app/500');
+                        return res.redirect('/internal-error');
                     }
 
                     const idUser = results.insertId
@@ -78,10 +80,10 @@ class Post {
 
                     mysql.query('UPDATE users SET confirmationToken = ? WHERE idUser = ?', [confirmationToken, idUser], (error, results) => {
                         if (error) {
-                            return res.redirect('/app/500');
+                            return res.redirect('/internal-error');
                         }
 
-                        // mail.sendMailConfirmation(email, username, confirmationToken);
+                        mail.sendMailConfirmation(email, username, confirmationToken);
 
                         return res.render('register', {
                             success: 'Utilisateur crée ! Confirmez votre compte en cliquant sur le lien reçu par mail.',
@@ -118,7 +120,7 @@ class Post {
                             });
                         }
 
-                        if (results[0].isConfirmed == 'Np') {
+                        if (results[0].isConfirmed == 'No') {
                             return res.render('login', {
                                 warning: 'Votre compte n\'est pas confirmé. Veuillez le confirmer en cliquant sur le lien que vous avez reçu par mail.',
                                 navbar: components.publicNavbar,
@@ -146,7 +148,7 @@ class Post {
 
                         mysql.query(sql, [ip, lastConnectionDate, lastConnectionTime, idUser], (error, results) => {
                             if (error) {
-                                return res.redirect('/app/500');
+                                return res.redirect('/internal-error');
                             }
                             
                             const token = jwt.sign({ idUser, role }, process.env.JWT_SECRET, {
@@ -184,7 +186,7 @@ class Post {
     #application(app) {
         // Post route for creation of an event
         app.post('/app/home/add-event', async (req, res) => {
-            const { name, description, address, latitude, longitude } = req.body;
+            const { name, description, date, time, duration, address, latitude, longitude } = req.body;
 
             try {
                 const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
@@ -198,12 +200,15 @@ class Post {
                     description: description,
                     latitude: latitude,
                     longitude: longitude,
-                    uuid: crypto.randomUUID()
+                    uuid: crypto.randomUUID(),
+                    date: date,
+                    time: time,
+                    duration: duration
                 };
 
                 mysql.query('INSERT INTO events SET ?', values, (error, results) => {
                     if (error) {
-                        return res.redirect('/app/500');
+                        return res.redirect('/internal-error');
                     }
 
                     const newValues = {
@@ -214,13 +219,17 @@ class Post {
 
                     mysql.query('INSERT INTO eventsparticipate SET ?', newValues, (error, results) => {
                         if (error) {
-                            return res.redirect('/app/500');
+                            return res.redirect('/internal-error');
                         }
+
+                        calendar.createFile(values, date, time, newValues.idEvent);
 
                         return res.redirect('/app/home');
                     });
                 });
-            } catch (error) {}
+            } catch (error) {
+                // TODO
+            }
         });
 
         // Post route for joining an event
@@ -229,7 +238,7 @@ class Post {
 
             mysql.query('SELECT * FROM events WHERE uuid = ?', uuid, (error, results) => {
                 if (error) {
-                    return res.redirect('/app/500');
+                    return res.redirect('/internal-error');
                 }
 
                 const idEvent = results[0].idEvent;
@@ -240,7 +249,7 @@ class Post {
 
                 mysql.query('SELECT * FROM eventsparticipate WHERE idEvent = ?', idEvent, async (error, results) => {
                     if (error) {
-                        return res.redirect('/app/500');
+                        return res.redirect('/internal-error');
                     }
 
                     try {
@@ -254,7 +263,7 @@ class Post {
 
                         mysql.query(sql, [decoded.idUser, idEvent], (error, results) => {
                             if (error) {
-                                return res.redirect('/app/500');
+                                return res.redirect('/internal-error');
                             }
 
                             if (results.length > 0) {
@@ -268,14 +277,14 @@ class Post {
     
                             mysql.query('INSERT INTO eventsparticipate SET ?', values, (error, results) => {
                                 if (error) {
-                                    return res.redirect('/app/500');
+                                    return res.redirect('/internal-error');
                                 }
     
                                 return res.redirect(`/app/event/${idEvent}`);
                             });
                         });
                     } catch (error) {
-                        return res.redirect('/app/500');
+                        return res.redirect('/internal-error');
                     }
                 });
             });
@@ -297,11 +306,11 @@ class Post {
 
                 mysql.query(sql, [idEvent, decoded.idUser], (error, results) => {
                     if (error) {
-                        return res.redirect('/app/500');
+                        return res.redirect('/internal-error');
                     }
 
                     if (results[0].status != 'Organizer') {
-                        return res.redirect('/app/500');
+                        return res.redirect('/internal-error');
                     }
 
                     sql = `
@@ -311,7 +320,7 @@ class Post {
 
                     mysql.query(sql, [idUser, idEvent], (error, results) => {
                         if (error) {
-                            return res.redirect('/app/500');
+                            return res.redirect('/internal-error');
                         }
 
                         let referer = req.headers.referer;
@@ -325,8 +334,9 @@ class Post {
             }
         });
 
+        // Post route for editing an event
         app.post('/app/event/:idEvent/edit-event', (req, res) => {
-            res.send('hello');
+            // TODO
         });
     }
 
@@ -356,7 +366,7 @@ class Post {
 
                     mysql.query('INSERT INTO quotes SET ?', values, (error, results) => {
                         if (error) {
-                            return res.redirect('/app/500');
+                            return res.redirect('/internal-error');
                         }
     
                         return res.redirect('/admin/quotes');
@@ -388,7 +398,7 @@ class Post {
         
                     mysql.query('DELETE FROM users WHERE idUser = ?', idUser, (error) => {
                         if (error) {
-                            return res.redirect('/app/500');
+                            return res.redirect('/internal-error');
                         }
 
                         return res.redirect('/admin/users');

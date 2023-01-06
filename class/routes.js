@@ -1,5 +1,6 @@
 require('dotenv').config();
 const components = require('./components');
+const eventController = require('../controller/eventController');
 const info = require('../package.json');
 const logger = require('../config/logger');
 const mysql = require('../config/mysql');
@@ -41,7 +42,7 @@ class Routes {
             } else {
                 mysql.query('SELECT * FROM quotes ORDER BY RAND ( ) LIMIT 1', (error, results) => {
                     if (error) {
-                        return res.redirect('/app/500');
+                        return res.redirect('/internal-error');
                     }
 
                     if (results.length == 0) {
@@ -119,7 +120,7 @@ class Routes {
 
             mysql.query('SELECT * FROM users WHERE confirmationToken = ?', confirmationToken, async (error, results) => {
                 if (error) {
-                    return res.redirect('/app/500');
+                    return res.redirect('/internal-error');
                 }
 
                 if (results.length != 1) {
@@ -131,7 +132,7 @@ class Routes {
 
                     mysql.query('UPDATE users SET isConfirmed = \'Yes\', confirmationToken = NULL WHERE idUser = ?', decoded.idUser, (error, results) => {
                         if (error) {
-                            return res.redirect('/app/500');
+                            return res.redirect('/internal-error');
                         }
     
                         return res.render('confirmation');
@@ -149,13 +150,18 @@ class Routes {
      * @returns {void} Page
      */
     #error(app) {
+        // ERROR 403
+        app.get('/forbidden', (req, res) => {
+            return res.sendFile(components.forbidden);
+        });
+
         // ERROR 404
-        app.get('/app/404', (req, res) => {
+        app.get('/not-found', (req, res) => {
             return res.sendFile(components.notFound);
         });
 
         // ERROR 500
-        app.get('/app/500', (req, res) => {
+        app.get('/internal-error', (req, res) => {
             return res.sendFile(components.internalError);
         });
     }
@@ -167,6 +173,7 @@ class Routes {
      * @returns Page
      */
     #application(app) {
+        // Home page
         app.get('/app/home', async (req, res) => {
             if (req.cookies.aperolandTicket) {
                 try {
@@ -176,7 +183,7 @@ class Routes {
 
                     mysql.query('SELECT username FROM users WHERE idUser = ?', [decoded.idUser], (error, results) => {
                         if (error) {
-                            return res.redirect('/app/500');
+                            return res.redirect('/internal-error');
                         }
 
                         const sql = `
@@ -190,7 +197,7 @@ class Routes {
 
                         mysql.query(sql, [decoded.idUser], (error, results) => {
                             if (error) {
-                                return res.redirect('/app/500');
+                                return res.redirect('/internal-error');
                             }
 
                             return res.render('app', {
@@ -213,41 +220,8 @@ class Routes {
             }
         });
 
-        app.get('/app/event/:idEvent', (req, res, next) => {
-            let sql = `
-                SELECT eventsparticipate.idUser FROM events
-                RIGHT JOIN eventsparticipate ON events.idEvent = eventsparticipate.idEvent
-                WHERE events.idEvent = ?
-            `;
-
-            mysql.query(sql, req.params.idEvent, async (error, results) => {
-                if (error) {
-                    return res.redirect('/app/500');
-                }
-
-                let isAllowed = false;
-
-                try {
-                    const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
-                        process.env.JWT_SECRET
-                    );
-
-                    results.forEach(element => {
-                        if (decoded.idUser == element.idUser) {
-                            isAllowed = true;
-                        }
-                    });
-
-                    if (isAllowed == false) {
-                        return res.status(403).redirect('/app/403');
-                    }
-
-                    return next();
-                } catch (error) {
-                    return res.redirect('/');
-                }
-            });
-        }, (req, res) => {
+        // Event page
+        app.get('/app/event/:idEvent', eventController.isAllowed, (req, res) => {
             if (req.cookies.aperolandTicket) {
                 let sql = `
                     SELECT * FROM events
@@ -257,7 +231,7 @@ class Routes {
 
                 mysql.query(sql, req.params.idEvent, (error, results) => {
                     if (error) {
-                        return res.redirect('/app/500');
+                        return res.redirect('/internal-error');
                     }
 
                     const eventInfo = results[0];
@@ -270,7 +244,7 @@ class Routes {
 
                     mysql.query(sql, eventInfo.idEvent, async (error, results) => {
                         if (error) {
-                            return res.redirect('/app/500');
+                            return res.redirect('/internal-error');
                         }
 
                         try {
@@ -291,6 +265,7 @@ class Routes {
                                 description: eventInfo.description,
                                 isOrganizer: isOrganizer,
                                 uuid: eventInfo.uuid,
+                                calendar: `/app/event/${eventInfo.idEvent}/calendar`,
                                 participants: results,
                                 latitude: eventInfo.latitude,
                                 longitude: eventInfo.longitude,
@@ -298,11 +273,26 @@ class Routes {
                                 idEvent: eventInfo.idEvent
                             });
                         } catch (error) {
-                            return res.redirect('/app/500');
+                            return res.redirect('/internal-error');
                         }
                     });
                 });
             }
+        });
+
+        // Download ics file
+        app.get('/app/event/:idEvent/calendar', eventController.isAllowed, (req, res) => {
+            let sql = `
+                SELECT * FROM events
+                WHERE idEvent = ?
+            `;
+            mysql.query(sql, req.params.idEvent, (error, results) => {
+                if (error) {
+                    return res.redirect('/internal-error');
+                }
+
+                return res.sendFile(path.join(__dirname, `../calendar/${results[0].idEvent}-${results[0].name}.ics`));
+            });
         });
     }
 
@@ -328,7 +318,7 @@ class Routes {
 
                     mysql.query('SELECT * FROM users WHERE role = \'User\'', (error, results) => {
                         if (error) {
-                            return res.redirect('/app/500');
+                            return res.redirect('/internal-error');
                         }
 
                         return res.render('users', {
@@ -359,7 +349,7 @@ class Routes {
 
                     mysql.query('SELECT * FROM quotes', (error, results) => {
                         if (error) {
-                            return res.redirect('/app/500');
+                            return res.redirect('/internal-error');
                         }
 
                         return res.render('quotes', {
@@ -397,7 +387,7 @@ class Routes {
 
                     mysql.query(sql, (error, results) => {
                         if (error) {
-                            return res.redirect('/app/500');
+                            return res.redirect('/internal-error');
                         }
 
                         return res.render('events', {

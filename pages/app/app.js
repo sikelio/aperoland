@@ -27,7 +27,7 @@ class App {
             render: {
                 option: function(item, escape) {
                     return `
-                        <div class="py-2 d-flex">
+                        <div class="py-0 d-flex">
                             <div>
                                 <div class="mb-1">
                                     <span>
@@ -42,7 +42,7 @@ class App {
                 },
                 item: function(item, escape) {
                     return `
-                        <div class="py-2 d-flex">
+                        <div class="py-0 d-flex">
                             <div>
                                 <div class="mb-1">
                                     <span>

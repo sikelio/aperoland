@@ -10,6 +10,13 @@
                     <div class="mb-3">
                         <input type="text" class="form-control" id="eventName" placeholder="Nom de l'apéro" name="name" required>
                     </div>
+
+                    <div class="input-group mb-3">
+                        <input type="date" class="form-control" id="date" placeholder="Date de l'apéro" name="date" required>
+                        <input type="time" class="form-control" id="time" placeholder="Heure de l'apéro" name="time" required>
+                        <input type="number" class="form-control" id="duration" placeholder="Durée en minutes de l'apéro" name="duration" min="0" required>
+                    </div>
+
                     <div class="mb-3">
                         <textarea class="form-control" id="eventDescription" rows="3" placeholder="Description" name="description"></textarea>
                     </div>

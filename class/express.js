@@ -65,7 +65,7 @@ class Express {
 
         // Redirecting to 404 page of all unknown routess
         this.#app.all('*', (req, res) => {
-            res.redirect('/app/404');
+            res.redirect('/not-found');
         });
 
         // Launch of the web server on specified port
