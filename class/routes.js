@@ -228,7 +228,7 @@ class Routes {
         app.get('/app/event/:idEvent', eventController.isAllowed, (req, res) => {
             if (req.cookies.aperolandTicket) {
                 let sql = `
-                    SELECT * FROM events
+                    SELECT *, DATE_FORMAT(events.date, '%d-%m-%Y') AS date FROM events
                     RIGHT JOIN users ON events.idUser = users.idUser
                     WHERE idEvent = ?
                 `;
@@ -275,7 +275,9 @@ class Routes {
                                 longitude: eventInfo.longitude,
                                 editEvent: components.editEvent,
                                 deleteUser: components.deleteUser,
-                                idEvent: eventInfo.idEvent
+                                idEvent: eventInfo.idEvent,
+                                date: eventInfo.date,
+                                time: eventInfo.time
                             });
                         } catch (error) {
                             return res.redirect('/internal-error');

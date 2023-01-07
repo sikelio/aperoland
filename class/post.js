@@ -243,6 +243,10 @@ class Post {
                     return res.redirect('/internal-error');
                 }
 
+                if (results.length == 0) {
+                    return res.redirect('/');
+                }
+
                 const idEvent = results[0].idEvent;
 
                 if (!idEvent) {
@@ -325,10 +329,7 @@ class Post {
                             return res.redirect('/internal-error');
                         }
 
-                        let referer = req.headers.referer;
-                        let parser = referer.split('/');
-
-                        return res.redirect(`/app/event/${parser[5]}`);
+                        return res.redirect(req.headers.referer);
                     });
                 });
             } catch (error) {

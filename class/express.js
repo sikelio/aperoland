@@ -45,8 +45,8 @@ class Express {
             origin: ['https://api-adresse.data.gouv.fr']
         }));
 
-        // Allow encoded URL
-        this.#app.use(express.urlencoded({ extended: true }));
+        // Allow encoded URL and max size upload
+        this.#app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
         // Middleware allow JSON
         this.#app.use(express.json());
