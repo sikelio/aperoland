@@ -339,7 +339,7 @@ class Post {
         // Post route for editing an event
         app.post('/app/event/:idEvent/edit-event', eventController.isOrganizer, (req, res) => {
             let sql = `
-                SELECT *, DATE_FORMAT(date, '%Y-%m-%d') AS date FROM EVENTS
+                SELECT *, DATE_FORMAT(date, '%Y-%m-%d') AS date FROM events
                 WHERE idEvent = ?
             `;
 
