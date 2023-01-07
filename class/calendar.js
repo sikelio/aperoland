@@ -13,6 +13,7 @@ class Calendar {
     createFile(info, date, time, idEvent) {
         const newDate = date.split('-');
         const newTime = time.split(':');
+        const newTitle = info.name.replace(/\s/g, '-').toLowerCase();
 
         ics.createEvent({
             title: info.name,
@@ -26,8 +27,36 @@ class Calendar {
                 console.error(error);
             }
 
-            fs.writeFileSync(`calendar/${idEvent}-${info.name}.ics`, value);
+            this.#createFolder();
+            fs.writeFileSync(`calendar/${idEvent}-${newTitle}.ics`, value);
         });
+    }
+
+    /**
+     * Recreate file is deleted or does not exist
+     * @param {object} info Event info
+     * @returns {void}
+     */
+    recreateFile(info) {
+        let date = info.date,
+            time = info.time,
+            idEvent = info.idEvent,
+            newDate = new Date(date),
+            newDay = newDate.getDay(),
+            newMonth = newDate.getMonth(),
+            newFullDate = `${newDate.getFullYear()}-${String(newMonth).padStart(2, '0')}-${String(newDay).padStart(2, '0')}`;
+
+        this.createFile(info, newFullDate, time, info.idEvent);
+    }
+
+    /**
+     * Check if the calendar exist
+     * @returns {void}
+     */
+    #createFolder() {
+        if (fs.existsSync('calendar') == false) {
+            fs.mkdirSync('calendar');
+        }
     }
 }
 

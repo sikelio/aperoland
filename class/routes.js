@@ -4,9 +4,13 @@ const eventController = require('../controller/eventController');
 const info = require('../package.json');
 const logger = require('../config/logger');
 const mysql = require('../config/mysql');
+const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const path = require('path');
 const { promisify } = require('util');
+
+const Calendar = require('./calendar');
+const calendar = new Calendar;
 
 class Routes {
     /**
@@ -291,7 +295,13 @@ class Routes {
                     return res.redirect('/internal-error');
                 }
 
-                return res.sendFile(path.join(__dirname, `../calendar/${results[0].idEvent}-${results[0].name}.ics`));
+                let eventName = results[0].name.replace(/\s/g, '-').toLowerCase();
+
+                if (fs.existsSync(`calendar/${results[0].idEvent}-${eventName}.ics`) == false) {
+                    calendar.recreateFile(results[0]);
+                }
+
+                return res.sendFile(path.join(__dirname, `../calendar/${results[0].idEvent}-${eventName}.ics`));
             });
         });
     }
