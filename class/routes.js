@@ -287,7 +287,7 @@ class Routes {
         // Download ics file
         app.get('/app/event/:idEvent/calendar', eventController.isAllowed, (req, res) => {
             let sql = `
-                SELECT * FROM events
+                SELECT *, DATE_FORMAT(date, '%Y-%m-%d') AS newDate FROM events
                 WHERE idEvent = ?
             `;
             mysql.query(sql, req.params.idEvent, (error, results) => {

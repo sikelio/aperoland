@@ -38,15 +38,7 @@ class Calendar {
      * @returns {void}
      */
     recreateFile(info) {
-        let date = info.date,
-            time = info.time,
-            idEvent = info.idEvent,
-            newDate = new Date(date),
-            newDay = newDate.getDay(),
-            newMonth = newDate.getMonth(),
-            newFullDate = `${newDate.getFullYear()}-${String(newMonth).padStart(2, '0')}-${String(newDay).padStart(2, '0')}`;
-
-        this.createFile(info, newFullDate, time, info.idEvent);
+        this.createFile(info, info.newDate, info.time, info.idEvent);
     }
 
     /**
