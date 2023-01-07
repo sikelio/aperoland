@@ -42,7 +42,6 @@ exports.isAllowed = (req, res, next) => {
 
             return next();
         } catch (error) {
-            console.error(error);
             return res.redirect('/');
         }
     });

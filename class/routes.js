@@ -404,8 +404,6 @@ class Routes {
                             return res.redirect('/internal-error');
                         }
 
-                        console.log(results);
-
                         return res.render('events', {
                             navbar: components.adminNavbar,
                             events: results
