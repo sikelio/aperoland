@@ -131,7 +131,7 @@ class Post {
 
                         const idUser = results[0].idUser;
                         const role = results[0].role;
-                        const ip = req.ip.split(':')[3];
+                        const ip = req.ip;
 
                         const date = new Date(), day = date.getDate(), month = date.getMonth() + 1,
                         year = date.getFullYear(), hours = date.getHours(), minutes = date.getMinutes(),
