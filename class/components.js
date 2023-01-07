@@ -12,6 +12,7 @@ exports.addEvent = fs.readFileSync(path.join(__dirname, '../components/app/modal
 exports.joinEvent = fs.readFileSync(path.join(__dirname, '../components/app/modals/joinEvent.html'));
 exports.addQuote = fs.readFileSync(path.join(__dirname, '../components/admin/modals/addQuote.html'));
 exports.confirmDeleteUser = fs.readFileSync(path.join(__dirname, '../components/admin/modals/confirmDeleteUser.html'));
+exports.editEvent = fs.readFileSync(path.join(__dirname, '../components/app/modals/editEvent.html'));
 exports.deleteUser = fs.readFileSync(path.join(__dirname, '../components/app/modals/deleteUser.html'));
 
 // Exports errors page

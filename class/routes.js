@@ -273,6 +273,7 @@ class Routes {
                                 participants: results,
                                 latitude: eventInfo.latitude,
                                 longitude: eventInfo.longitude,
+                                editEvent: components.editEvent,
                                 deleteUser: components.deleteUser,
                                 idEvent: eventInfo.idEvent
                             });
@@ -290,6 +291,7 @@ class Routes {
                 SELECT *, DATE_FORMAT(date, '%Y-%m-%d') AS newDate FROM events
                 WHERE idEvent = ?
             `;
+
             mysql.query(sql, req.params.idEvent, (error, results) => {
                 if (error) {
                     return res.redirect('/internal-error');
@@ -389,9 +391,11 @@ class Routes {
                     }
 
                     let sql = `
-                        SELECT E.idEvent, E.idUser, E.name, U.email, COUNT(EP.idUser) AS attendees FROM events AS E
+                        SELECT E.idEvent, E.idUser, E.name, U.email, COUNT(EP.idUser) AS attendees, E.address,
+                        DATE_FORMAT(E.date, '%Y-%m-%d') AS date, E.time, E.duration
+                        FROM events AS E
                         RIGHT JOIN users AS U ON E.idUser = U.idUser
-                        RIGHT JOIN (select * from eventsparticipate) AS EP ON EP.idEvent = E.idEvent
+                        RIGHT JOIN (SELECT * FROM eventsparticipate) AS EP ON EP.idEvent = E.idEvent
                         GROUP BY E.idEvent
                     `;
 
@@ -399,6 +403,8 @@ class Routes {
                         if (error) {
                             return res.redirect('/internal-error');
                         }
+
+                        console.log(results);
 
                         return res.render('events', {
                             navbar: components.adminNavbar,

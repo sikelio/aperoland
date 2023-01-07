@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/libs/bootstrap@5.2.3/bootstrap.min.css">
     <link rel="stylesheet" href="/libs/bootstrap-icons@1.10.2/bootstrap-icons.css">
+    <link rel="stylesheet" href="/libs/leaflet@1.9.3/leaflet.css">
     <link rel="stylesheet" href="/pages/events/events.css">
     <title>Aperoland - Events</title>
 </head>
@@ -20,6 +21,10 @@
                         <th scope="col">Nom</th>
                         <th scope="col">Organisateur</th>
                         <th scope="col">Nombre de participants</th>
+                        <th scope="col">Adresse</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Heure</th>
+                        <th scope="col">Durée</th>
                     </thead>
                     <tbody>
                         {{#if events}}
@@ -28,20 +33,31 @@
                                     <td>{{name}}</td>
                                     <td>{{email}}</td>
                                     <td>{{attendees}}</td>
+                                    <td>{{address}}</td>
+                                    <td>{{date}}</td>
+                                    <td>{{time}}</td>
+                                    <td>{{duration}} minutes</td>
                                 </tr>
                             {{/each}}
                         {{else}}
                             <tr>
-                                <td colspan="5">Aucun evènement</td>
+                                <td colspan="7" class="text-center">Aucun evènement</td>
                             </tr>
                         {{/if}}
                     </tbody>
                 </table>
             </div>
+            <div class="mb-3" id="map"></div>
         </div>
     </main>
 
     <script src="/libs/bootstrap@5.2.3/bootstrap.bundle.min.js"></script>
-    <script src="/libs/tom-select@2.2.2/tom-select.complete.min.js"></script>
+    <script src="/libs/leaflet@1.9.3/leaflet.js"></script>
+    <script src="/libs/axios/axios.min.js"></script>
+    <script src="/pages/events/events.js"></script>
+    <script>
+        const eventsAdmin = new EventsAdmin;
+        eventsAdmin.eventsList();
+    </script>
 </body>
 </html>

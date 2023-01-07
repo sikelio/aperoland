@@ -11,7 +11,7 @@ class App {
             searchField: 'label',
             maxItems: 1,
             onItemAdd: (value, item) => {
-                this.#addressCallback(value, item)
+                this.#addressCallback(value, item);
             },
             closeAfterSelect: true,
             load: function(query, callback) {
@@ -27,7 +27,7 @@ class App {
             render: {
                 option: function(item, escape) {
                     return `
-                        <div class="py-0 d-flex">
+                        <div class="py-2 d-flex">
                             <div>
                                 <div class="mb-1">
                                     <span>

@@ -1,4 +1,6 @@
 const components = require('./components');
+const eventController = require('../controller/eventController');
+const adminController = require('../controller/adminController');
 const mysql = require('../config/mysql');
 const info = require('../package.json');
 const bcrypt = require('bcryptjs');
@@ -335,8 +337,42 @@ class Post {
         });
 
         // Post route for editing an event
-        app.post('/app/event/:idEvent/edit-event', (req, res) => {
-            // TODO
+        app.post('/app/event/:idEvent/edit-event', eventController.isOrganizer, (req, res) => {
+            let sql = `
+                SELECT *, DATE_FORMAT(date, '%Y-%m-%d') AS date FROM EVENTS
+                WHERE idEvent = ?
+            `;
+
+            mysql.query(sql, req.params.idEvent, (error, results) => {
+                return res.send(results[0]);
+            });
+        });
+
+        app.post('/app/event/:idEvent/edit-event/save', eventController.isOrganizer, eventController.deleteOldIcsFile, (req, res) => {
+            let sql = `
+                UPDATE events SET ? WHERE idEvent = ?
+            `;
+
+            mysql.query(sql, [req.body, req.params.idEvent], (error, results) => {
+                if (error) {
+                    return res.redirect('/internal-error');
+                }
+
+                sql = `
+                    SELECT *, DATE_FORMAT(date, '%Y-%m-%d') AS newDate FROM events
+                    WHERE idEvent = ?
+                `;
+
+                mysql.query(sql, req.params.idEvent, (error, results) => {
+                    if (error) {
+                        return res.redirect('/internal-error');
+                    }
+    
+                    calendar.recreateFile(results[0]);
+    
+                    return res.redirect(`/app/event/${req.params.idEvent}`)
+                });
+            });
         });
     }
 
@@ -407,6 +443,25 @@ class Post {
                     return res.redirect('/');
                 }
             }
+        });
+
+        app.post('/admin/events/get-events', adminController.isAdmin, (req, res) => {
+            let sql = `
+                SELECT E.idEvent, E.idUser, E.name, U.email, COUNT(EP.idUser) AS attendees, E.address,
+                DATE_FORMAT(E.date, '%Y-%m-%d') AS date, E.time, E.duration, E.latitude, E.longitude
+                FROM events AS E
+                RIGHT JOIN users AS U ON E.idUser = U.idUser
+                RIGHT JOIN (SELECT * FROM eventsparticipate) AS EP ON EP.idEvent = E.idEvent
+                GROUP BY E.idEvent
+            `;
+
+            mysql.query(sql, (error, results) => {
+                if (error) {
+                    return res.redirect('/internal-error');
+                }
+
+                return res.send(results);
+            });
         });
     }
 }

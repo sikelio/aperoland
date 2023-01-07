@@ -1,25 +1,36 @@
 <div class="modal fade" id="editEvent" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <form action="/admin/users/delete-user" method="post">
+            <form action="" method="post">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Confirmation de suppression</h1>
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Modification de l'apéro</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <span>Êtes vous sur de vouloir supprimer cet utilisateur ?</span>
-                        <br>
-                        <span>- </span>
-                        <span class="fw-bold" id="deletedUser"></span>
+                        <input type="text" class="form-control" id="name" placeholder="Nom de l'apéro" name="name" required>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <input type="date" class="form-control" id="date" placeholder="Date de l'apéro" name="date" required>
+                        <input type="time" class="form-control" id="time" placeholder="Heure de l'apéro" name="time" required>
+                        <input type="number" class="form-control" id="duration" placeholder="Durée en minutes de l'apéro" name="duration" min="0" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <textarea class="form-control" id="description" rows="3" placeholder="Description" name="description"></textarea>
                     </div>
                     <div class="mb-3">
-                        <input type="number" class="form-control" id="idUser" placeholder="ID de l'utilisateur" name="idUser" min="1" required>
+                        <select class="form-select" name="address" id="address" placeholder="Adresse" multiple></select>
+                    </div>
+                    <div class="mb-3 d-none">
+                        <input type="text" class="form-control" id="latitude" placeholder="Latitude" name="latitude">
+                        <input type="text" class="form-control" id="longitude" placeholder="Longitude" name="longitude">
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                    <input type="submit" class="btn btn-danger" value="Supprimer" id="btn-delete-user">
+                    <input type="submit" class="btn btn-success" value="Enregistrer" id="">
                 </div>
             </form>
         </div>

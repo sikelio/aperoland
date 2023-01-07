@@ -18,20 +18,54 @@ class EventManager {
         }
     }
 
+    /**
+     * Request of the event data
+     * @param {number} idEvent ID of the event
+     * @returns {void}
+     */
     editEventButton(idEvent) {
-        const editEventModal = '';
-
         var url = `/app/event/${idEvent}/edit-event`;
 
-        const editButton = document.getElementById('editEvent');
+        const editButton = document.getElementById('editEventBtn');
         editButton.addEventListener('click', (e) => {
-            fetch(url)
-                .then(response => response.json())
-                .then(json => {
-                    console.error(json);
-                }).catch(() => {
-                    console.error();
+            axios.post(url)
+                .then((response) => {
+                    this.#fillEditModal(response.data);
+                })
+                .catch((error) => {
+                    console.error(error);
                 });
+        });
+    }
+
+    /**
+     * Fill the modal input with event data
+     * @param {object} data Event data
+     * @returns {void}
+     */
+    #fillEditModal(data) {
+        const editEventModalLocation = document.getElementById('editEvent');
+        let editEventModal = new bootstrap.Modal(editEventModalLocation);
+        editEventModal.show();
+        editEventModal['_element'].querySelector('form').action = `/app/event/${data.idEvent}/edit-event/save`
+
+        Object.entries(data).forEach((key) => {
+            if (editEventModal['_element'].querySelector(`#${key[0]}`)) {
+                editEventModal['_element'].querySelector(`#${key[0]}`).value = key[1];
+            }
+        });
+    }
+
+    /**
+     * Event for copy the event code
+     * @returns {void}
+     */
+    copyEventCodeButton() {
+        const btn = document.getElementById('copyEventCode');
+        const uuid = document.getElementById('uuid');
+
+        btn.addEventListener('click', (e) => {
+            navigator.clipboard.writeText(uuid.textContent);
         });
     }
 }

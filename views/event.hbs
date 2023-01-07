@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/libs/bootstrap@5.2.3/bootstrap.min.css">
     <link rel="stylesheet" href="/libs/bootstrap-icons@1.10.2/bootstrap-icons.css">
     <link rel="stylesheet" href="/libs/leaflet@1.9.3/leaflet.css">
+    <link rel="stylesheet" href="/libs/tom-select@2.2.2/tom-select.css">
     <link rel="stylesheet" href="/pages/event/event.css">
     <title>Aperoland - {{eventName}}</title>
 </head>
@@ -25,16 +26,19 @@
                 {{#if isOrganizer}}
                     <br>
                     <span>Code : </span>
-                    <span class="fst-italic">{{uuid}}</span>
+                    <span class="fst-italic" id="uuid">{{uuid}}</span>
+                    <button type="button" class="btn btn-primary" id="copyEventCode">
+                        <i class="bi bi-clipboard-check"></i>
+                    </button>
                 {{/if}}
                 <br>
-                <a href="{{calendar}}" target="_blank" rel="noopener noreferrer">Télécharger évenement</a>
+                <a href="{{calendar}}" target="_blank" rel="noopener noreferrer">Télécharger l'évenement</a>
             </div>
 
             {{#if isOrganizer}}
                 <div class="btn-group mt-5" role="group" aria-label="Basic example">
-                    <button type="button" class="btn btn-primary" id="editEvent">Modifier l'apéro</button>
-                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteEvent">Supprimer l'apéro</button>
+                    <button type="button" class="btn btn-primary" id="editEventBtn">Modifier l'apéro</button>
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#">Supprimer l'apéro</button>
                 </div>
             {{/if}}
 
@@ -78,7 +82,7 @@
                         {{/if}}
                     </tbody>
                 </table>
-                </div>
+            </div>
             <div class="mb-3" id="map"></div>
         </div>
     </main>
@@ -89,19 +93,21 @@
 
     <script src="/libs/bootstrap@5.2.3/bootstrap.bundle.min.js"></script>
     <script src="/libs/leaflet@1.9.3/leaflet.js"></script>
+    <script src="/libs/tom-select@2.2.2/tom-select.complete.min.js"></script>
+    <script src="/libs/axios/axios.min.js"></script>
     <script src="/pages/app/app.js"></script>
     <script>
         const app = new App;
         app.leafletMap('map', {{latitude}}, {{longitude}}, `{{eventName}}`);
+        app.modalsSelect(document.querySelector('#editEvent').querySelector('#address'));
     </script>
     {{#if isOrganizer}}
         <script src="/pages/event/event.js"></script>
-    {{/if}}
-    {{#if isOrganizer}}
         <script>
             const eventManager = new EventManager;
             eventManager.deleteUserButton();
             eventManager.editEventButton({{idEvent}});
+            eventManager.copyEventCodeButton();
         </script>
     {{/if}}
 </body>
