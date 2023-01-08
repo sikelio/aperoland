@@ -9,7 +9,7 @@ const { promisify } = require('util');
  * @param {object} req ExpressJS request data
  * @param {function} res ExpressJS response functions
  * @param {function} next Go to next middleware
- * @returns {redirect}
+ * @returns {next}
  */
 exports.isAllowed = (req, res, next) => {
     let sql = `
@@ -52,7 +52,7 @@ exports.isAllowed = (req, res, next) => {
  * @param {object} req ExpressJS request data
  * @param {function} res ExpressJS response functions
  * @param {function} next Go to next middleware
- * @returns {redirect}
+ * @returns {next}
  */
 exports.isOrganizer = (req, res, next) => {
     let sql = `
@@ -86,7 +86,7 @@ exports.isOrganizer = (req, res, next) => {
  * @param {object} req ExpressJS request data
  * @param {function} res ExpressJS response functions
  * @param {function} next Go to next middleware
- * @returns {void}
+ * @returns {next}
  */
 exports.deleteOldIcsFile = (req, res, next) => {
     let sql = `

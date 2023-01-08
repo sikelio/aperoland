@@ -1,9 +1,14 @@
 require('dotenv').config();
-const mysql = require('../config/mysql');
-const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
 
+/**
+ * Check if user has admin role
+ * @param {object} req ExpressJS request data
+ * @param {function} res ExpressJS response functions
+ * @param {function} next Go to next middleware
+ * @returns {next}
+ */
 exports.isAdmin = async (req, res, next) => {
     try {
         const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
