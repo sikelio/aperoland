@@ -1,3 +1,17 @@
 main > .container.control {
     padding: 75px 15px 0;
 }
+
+input#time {
+    border-radius: unset !important;
+}
+
+input#date {
+    border-top-right-radius: unset !important;
+    border-bottom-right-radius: unset !important;
+}
+
+input#duration {
+    border-top-left-radius: unset !important;
+    border-bottom-left-radius: unset !important;
+}

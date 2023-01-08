@@ -201,7 +201,7 @@
 .ts-control input {
   color: #303030;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 1rem;
   line-height: 18px;
   font-smoothing: inherit;
 }
@@ -221,7 +221,7 @@
   z-index: 1;
   box-sizing: border-box;
   box-shadow: none;
-  border-radius: 3px;
+  border-radius: 5px;
   display: flex;
   flex-wrap: wrap;
 }

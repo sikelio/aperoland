@@ -349,6 +349,7 @@ class Post {
             });
         });
 
+        // Post route for saving modification
         app.post('/app/event/:idEvent/edit-event/save', eventController.isOrganizer, eventController.deleteOldIcsFile, (req, res) => {
             let sql = `
                 UPDATE events SET ? WHERE idEvent = ?
