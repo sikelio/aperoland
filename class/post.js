@@ -329,7 +329,7 @@ class Post {
                             return res.redirect('/internal-error');
                         }
 
-                        return res.redirect(req.headers.referer);
+                        return res.redirect(`/app/event/${idEvent}`);
                     });
                 });
             } catch (error) {
