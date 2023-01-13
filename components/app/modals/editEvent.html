@@ -1,24 +1,45 @@
 <div class="modal fade" id="editEvent" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <form action="" method="post">
+            <form action="" class="needs-validation" method="post" novalidate>
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="staticBackdropLabel">Modification de l'apéro</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body row g-0">
                     <div class="mb-3">
                         <input type="text" class="form-control" id="name" placeholder="Nom de l'apéro" name="name" required>
+                        <div class="invalid-feedback">
+                            Veuillez renseignez un nom
+                        </div>
                     </div>
 
-                    <div class="input-group mb-3">
+                    <div class="mb-3 col-4">
                         <input type="date" class="form-control" id="date" placeholder="Date de l'apéro" name="date" required>
+                        <div class="invalid-feedback">
+                            Veuillez renseignez une date
+                        </div>
+                    </div>
+
+                    <div class="mb-3 col-4">
                         <input type="time" class="form-control" id="time" placeholder="Heure de l'apéro" name="time" required>
+                        <div class="invalid-feedback">
+                            Veuillez renseignez une heure de début
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3 col-4">
                         <input type="number" class="form-control" id="duration" placeholder="Durée en minutes de l'apéro" name="duration" min="0" required>
+                        <div class="invalid-feedback">
+                            Veuillez renseignez une durée
+                        </div>
                     </div>
 
                     <div class="mb-3">
-                        <textarea class="form-control" id="description" rows="3" placeholder="Description" name="description"></textarea>
+                        <textarea class="form-control" id="description" rows="3" placeholder="Description" name="description" required></textarea>
+                        <div class="invalid-feedback">
+                            Veuillez renseignez une description
+                        </div>
                     </div>
                     <div class="mb-3">
                         <select class="form-select" name="address" id="address" placeholder="Adresse" multiple></select>
