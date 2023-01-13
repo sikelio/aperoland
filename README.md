@@ -38,14 +38,14 @@ server {
 
 	location / {
 		proxy_pass              http://server-ip:port/;
-        proxy_set_header        X-Forwarded-Host        $server_name:$server_port;
-        proxy_hide_header       Referer;
-        proxy_hide_header       Origin;
-        proxy_set_header        Referer                 '';
-        proxy_set_header        Origin                  '';
-        proxy_set_header        X-Real-IP               $remote_addr;
-        proxy_set_header        X-Forwarded-For         $remote_addr;
-        add_header              X-Frame-Options         "SAMEORIGIN";
+      	proxy_set_header        X-Forwarded-Host        $server_name:$server_port;
+      	proxy_hide_header       Referer;
+      	proxy_hide_header       Origin;
+      	proxy_set_header        Referer                 '';
+      	proxy_set_header        Origin                  '';
+      	proxy_set_header        X-Real-IP               $remote_addr;
+      	proxy_set_header        X-Forwarded-For         $remote_addr;
+      	add_header              X-Frame-Options         "SAMEORIGIN";
 	}
 }
 ```

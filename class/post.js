@@ -10,10 +10,9 @@ const { promisify } = require('util');
 
 const Calendar = require('./calendar');
 const Mail = require('./mail');
-const calendar = new Calendar;
 const mail = new Mail;
 
-class Post {
+class Post extends Calendar {
     /**
      * Init of all post routes
      * @param {function} app ExpressJS functions
@@ -224,7 +223,7 @@ class Post {
                             return res.redirect('/internal-error');
                         }
 
-                        calendar.createFile(values, date, time, newValues.idEvent);
+                        this.createFile(values, date, time, newValues.idEvent);
 
                         return res.redirect('/app/home');
                     });
@@ -369,9 +368,9 @@ class Post {
                     if (error) {
                         return res.redirect('/internal-error');
                     }
-    
-                    calendar.recreateFile(results[0]);
-    
+
+                    this.recreateFile(results[0]);
+
                     return res.redirect(`/app/event/${req.params.idEvent}`)
                 });
             });

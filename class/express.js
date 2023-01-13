@@ -18,9 +18,10 @@ const hbsHelpers = new HbsHelpers;
 const post = new Post;
 const routes = new Routes;
 
+const app = express();
+
 class Express {
     // Private variables
-    #app = express();
     #port = process.env.EXPRESS_PORT;
 
     /**
@@ -32,44 +33,44 @@ class Express {
         hbsHelpers.register();
 
         // Initialization of routes for public files
-        files.init(this.#app);
+        files.init(app);
 
         // Setting up the view engine to hbs
-        this.#app.set('view engine', 'hbs');
+        app.set('view engine', 'hbs');
 
         // Trusting the reverse proxy of nginx
-        this.#app.set('trust proxy', true);
+        app.set('trust proxy', true);
 
         // Allow request to the followings URL
-        this.#app.use(cors({
+        app.use(cors({
             origin: ['https://api-adresse.data.gouv.fr']
         }));
 
         // Allow encoded URL and max size upload
-        this.#app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+        app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
         // Middleware allow JSON
-        this.#app.use(express.json());
+        app.use(express.json());
 
         // Initialization of the cookieparser
-        this.#app.use(cookieParser());
+        app.use(cookieParser());
 
         // Initialization of posting routes
-        post.init(this.#app);
+        post.init(app);
 
         // Initialization of get routes
-        routes.init(this.#app);
+        routes.init(app);
 
         // Initialization of api's routes
-        api.init(this.#app);
+        api.init(app);
 
         // Redirecting to 404 page of all unknown routess
-        this.#app.all('*', (req, res) => {
+        app.all('*', (req, res) => {
             res.redirect('/not-found');
         });
 
         // Launch of the web server on specified port
-        this.#app.listen(this.#port, () => {
+        app.listen(this.#port, () => {
             console.log(`Aperoland launched on port ${this.#port}`);
         });
     }

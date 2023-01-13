@@ -1,6 +1,7 @@
 require('dotenv').config();
 const components = require('./components');
 const eventController = require('../controller/eventController');
+const accountController = require('../controller/accountController');
 const info = require('../package.json');
 const logger = require('../config/logger');
 const mysql = require('../config/mysql');
@@ -10,9 +11,8 @@ const path = require('path');
 const { promisify } = require('util');
 
 const Calendar = require('./calendar');
-const calendar = new Calendar;
 
-class Routes {
+class Routes extends Calendar {
     /**
      * Init of all types of routes
      * @param {function} app ExpressJS functions
@@ -302,11 +302,25 @@ class Routes {
                 let eventName = results[0].name.replace(/\s/g, '-').toLowerCase();
 
                 if (fs.existsSync(`calendar/${results[0].idEvent}-${eventName}.ics`) == false) {
-                    calendar.recreateFile(results[0]);
+                    this.recreateFile(results[0]);
                 }
 
                 return res.sendFile(path.join(__dirname, `../calendar/${results[0].idEvent}-${eventName}.ics`));
             });
+        });
+
+        app.get('/app/account', accountController.isConnected, async (req, res) => {
+            try {
+                const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
+                    process.env.JWT_SECRET
+                );
+
+                return res.render('account', {
+                    navbar: this.#getNavbar(decoded.role)
+                });
+            } catch (error) {
+                return res.redirect('/');
+            }
         });
     }
 
