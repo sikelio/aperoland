@@ -20,21 +20,22 @@ class API {
     #geocode(app) {
         app.get('/api/geocode', async (req, res) => {
             let queryString = req.query.q;
-            let url = 'https://api-adresse.data.gouv.fr/search/?q=' + encodeURIComponent(queryString);
+            let url = `https://api.tomtom.com/search/2/geocode/${encodeURIComponent(queryString)}.json?key=${process.env.TOMTOM_API_KEY}`;
 
             await axios.get(url)
                 .then((response) => {
                     let finalData = Array();
 
-                    response.data.features.forEach(element => {
-                        if (!element.properties['coordinates']) {
-                            element.properties['coordinates'] = [element.geometry.coordinates[1], element.geometry.coordinates[0]]
+                    response.data.results.forEach(element => {
+
+                        if (!element.address['coordinates']) {
+                            element.address['coordinates'] = [element.position.lat, element.position.lon]
                         }
 
-                        finalData.push(element.properties);
+                        finalData.push(element.address);
                     });
 
-                    res.send(finalData)
+                    res.send(finalData);
                 })
                 .catch((error) => {
                     res.send([]);

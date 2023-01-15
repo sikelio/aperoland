@@ -43,7 +43,7 @@ class Express {
 
         // Allow request to the followings URL
         app.use(cors({
-            origin: ['https://api-adresse.data.gouv.fr']
+            origin: ['https://api.tomtom.com']
         }));
 
         // Allow encoded URL and max size upload

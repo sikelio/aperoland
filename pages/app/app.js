@@ -6,9 +6,9 @@ class App {
      */
     modalsSelect(element) {
         new TomSelect(element, {
-            valueField: 'label',
-            labelField: 'label',
-            searchField: 'label',
+            valueField: 'freeformAddress',
+            labelField: 'freeformAddress',
+            searchField: 'freeformAddress',
             maxItems: 1,
             onItemAdd: (value, item) => {
                 this.#addressCallback(value, item);
@@ -31,7 +31,7 @@ class App {
                             <div>
                                 <div class="mb-1">
                                     <span>
-                                        ${escape(item.label)}
+                                        ${escape(item.freeformAddress)}
                                     </span>
                                     <span id="lat" class="d-none">${escape(item.coordinates[0])}</span>
                                     <span id="long" class="d-none">${escape(item.coordinates[1])}</span>
@@ -46,7 +46,7 @@ class App {
                             <div>
                                 <div class="mb-1">
                                     <span>
-                                        ${escape(item.label)}
+                                        ${escape(item.freeformAddress)}
                                     </span>
                                     <span id="lat" class="d-none">${escape(item.coordinates[0])}</span>
                                     <span id="long" class="d-none">${escape(item.coordinates[1])}</span>
