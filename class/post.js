@@ -393,15 +393,69 @@ class Post extends Calendar {
                 );
 
                 let sql = `
-                    UPDATE users SET ? WHERE idUser = ?
+                    SELECT * FROM users
+                    WHERE email = ?
                 `;
 
-                mysql.query(sql, [req.body, decoded.idUser], (error, results) => {
+                mysql.query(sql, email, (error, results) => {
                     if (error) {
                         return res.redirect('/internal-error');
                     }
 
-                    return res.redirect('/app/account');
+                    let checkResult = results;
+
+                    sql = `
+                        SELECT * FROM users
+                        WHERE idUser = ?
+                    `;
+
+                    mysql.query(sql, decoded.idUser, (error, results) => {
+                        if (error) {
+                            return res.redirect('/internal-error');
+                        }
+
+                        if (checkResult.length > 0) {
+                            return res.render('account', {
+                                navbar: this.#getNavbar(decoded.role),
+                                'error-account-info': 'Cet email est déja utilisé',
+                                userData: {
+                                    username: results[0].username,
+                                    email: results[0].email,
+                                }
+                            });
+                        }
+
+                        const date = new Date(), day = date.getDate(), month = date.getMonth() + 1,
+                        year = date.getFullYear(), hours = date.getHours(), minutes = date.getMinutes(),
+                        seconds = date.getSeconds();
+
+                        const fullDate = `${day}-${month}-${year}`;
+                        const fullTime = `${hours}:${minutes}:${seconds}`;
+
+                        const userInfo = {
+                            email: results[0].email,
+                            username: results[0].username,
+                            newEmail: email,
+                            newUsername: username,
+                            ip: res.ip,
+                            date: fullDate,
+                            time: fullTime
+                        };
+
+                        sql = `
+                            UPDATE users SET ? WHERE idUser = ?
+                        `;
+
+                        mysql.query(sql, [req.body, decoded.idUser], (error, results) => {
+                            if (error) {
+                                return res.redirect('/internal-error');
+                            }
+
+                            mail.sendAccountInfoHasChanged(userInfo.email, userInfo.username, userInfo);
+
+                            return res.redirect('/app/account');
+                        });
+                    });
                 });
             } catch (error) {
                 return res.redirect('/');
@@ -435,6 +489,21 @@ class Post extends Calendar {
                         return res.redirect('/internal-error');
                     }
 
+                    const date = new Date(), day = date.getDate(), month = date.getMonth() + 1,
+                    year = date.getFullYear(), hours = date.getHours(), minutes = date.getMinutes(),
+                    seconds = date.getSeconds();
+
+                    const fullDate = `${day}-${month}-${year}`;
+                    const fullTime = `${hours}:${minutes}:${seconds}`;
+
+                    const mailInfo = {
+                        to: results[0].email,
+                        username: results[0].username,
+                        ip: req.ip,
+                        date: fullDate,
+                        time: fullTime
+                    };
+
                     try {
                         if (results.length == 0 || !(await bcrypt.compare(password, results[0].password))) {
                             // TODO
@@ -452,6 +521,8 @@ class Post extends Calendar {
                                 if (error) {
                                     return res.redirect('/internal-error');
                                 }
+
+                                mail.sendPasswordWasReset(mailInfo.to, mailInfo.username, mailInfo);
 
                                 return res.redirect('/app/account');
                             });
@@ -555,6 +626,26 @@ class Post extends Calendar {
                 return res.send(results);
             });
         });
+    }
+
+    /**
+     * Get the navbar following the user role
+     * @param {string} role User role
+     * @returns {element}
+     */
+    #getNavbar(role) {
+        let navbar;
+
+        switch (role) {
+            case 'User':
+                navbar = components.appNavbar
+                break;
+            case 'Admin':
+                navbar = components.adminNavbar;
+                break;
+        }
+
+        return navbar;
     }
 
     /**
