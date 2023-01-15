@@ -315,8 +315,20 @@ class Routes extends Calendar {
                     process.env.JWT_SECRET
                 );
 
-                return res.render('account', {
-                    navbar: this.#getNavbar(decoded.role)
+                let sql = `
+                    SELECT * FROM users
+                    WHERE idUser = ?
+                `;
+
+                mysql.query(sql, decoded.idUser, (error, results) => {
+                    if (error) {
+                        return res.redirect('/internal-error');
+                    }
+
+                    return res.render('account', {
+                        navbar: this.#getNavbar(decoded.role),
+                        userData: results[0]
+                    });
                 });
             } catch (error) {
                 return res.redirect('/');

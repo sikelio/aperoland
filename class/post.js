@@ -1,5 +1,6 @@
 const components = require('./components');
 const eventController = require('../controller/eventController');
+const accountController = require('../controller/accountController');
 const adminController = require('../controller/adminController');
 const mysql = require('../config/mysql');
 const info = require('../package.json');
@@ -65,8 +66,6 @@ class Post extends Calendar {
                 }
 
                 let hashedPassword = await bcrypt.hash(password, 8);
-
-                
 
                 mysql.query('INSERT INTO users SET ?', { username: username, email: email, password: hashedPassword }, (error, results) => {
                     if (error) {
@@ -229,7 +228,7 @@ class Post extends Calendar {
                     });
                 });
             } catch (error) {
-                // TODO
+                return res.redirect('/');
             }
         });
 
@@ -289,7 +288,7 @@ class Post extends Calendar {
                             });
                         });
                     } catch (error) {
-                        return res.redirect('/internal-error');
+                        return res.redirect('/');
                     }
                 });
             });
@@ -374,6 +373,98 @@ class Post extends Calendar {
                     return res.redirect(`/app/event/${req.params.idEvent}`)
                 });
             });
+        });
+
+        // Post route for changing account info
+        app.post('/app/account/change-info', accountController.isConnected, async (req, res) => {
+            const { email, username } = req.body;
+
+            if (this.#checkStringNotNull(username) == false) {
+                return res.redirect('/app/account');
+            }
+
+            if (this.#checkEmail(email) == false) {
+                return res.redirect('/app/account');
+            }
+
+            try {
+                const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
+                    process.env.JWT_SECRET
+                );
+
+                let sql = `
+                    UPDATE users SET ? WHERE idUser = ?
+                `;
+
+                mysql.query(sql, [req.body, decoded.idUser], (error, results) => {
+                    if (error) {
+                        return res.redirect('/internal-error');
+                    }
+
+                    return res.redirect('/app/account');
+                });
+            } catch (error) {
+                return res.redirect('/');
+            }
+        });
+
+        // Post route for changing password
+        app.post('/app/account/change-password', accountController.isConnected, async (req, res) => {
+            const { password, newPassword, newPasswordConfirm } = req.body;
+
+            if (!password || !newPassword || !newPasswordConfirm) {
+                // TODO
+            }
+
+            if (newPassword != newPasswordConfirm) {
+                // TODO
+            }
+
+            try {
+                const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
+                    process.env.JWT_SECRET
+                );
+
+                    let sql = `
+                        SELECT * FROM users
+                        WHERE idUser = ?
+                    `;
+
+                mysql.query(sql, decoded.idUser, async (error, results) => {
+                    if (error) {
+                        return res.redirect('/internal-error');
+                    }
+
+                    try {
+                        if (results.length == 0 || !(await bcrypt.compare(password, results[0].password))) {
+                            // TODO
+                        }
+
+                        try {
+                            let hashedPassword = await bcrypt.hash(newPassword, 8);
+
+                            sql = `
+                                UPDATE users SET password = ?
+                                WHERE idUser = ?
+                            `;
+
+                            mysql.query(sql, [hashedPassword, decoded.idUser], (error, results) => {
+                                if (error) {
+                                    return res.redirect('/internal-error');
+                                }
+
+                                return res.redirect('/app/account');
+                            });
+                        } catch (error) {
+                            return res.redirect('/');
+                        }
+                    } catch (error) {
+                        return res.redirect('/');
+                    }
+                });
+            } catch (error) {
+                return res.redirect('/');
+            }
         });
     }
 
@@ -464,6 +555,30 @@ class Post extends Calendar {
                 return res.send(results);
             });
         });
+    }
+
+    /**
+     * Check if string is not empty
+     * @param {string} string String value
+     * @returns {boolean}
+     */
+    #checkStringNotNull(string) {
+        if (string) {
+            return true;
+        }
+        
+        return false;
+    }
+
+    /**
+     * Check if string is an email
+     * @param {string} email Email string
+     * @returns {boolean}
+     */
+    #checkEmail(email) {
+        var regEx = /\S+@\S+\.\S+/;
+
+        return regEx.test(email);
     }
 }
 
