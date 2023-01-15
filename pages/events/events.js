@@ -20,13 +20,15 @@ class EventsAdmin {
      * @returns {void}
      */
     #leafletAdminMap(element = 'map', data) {
-        let map = L.map(element).setView([0, 0], 1);
+        let map = L.map(element, { maxZoom: 18 }).setView([0, 0], 1);
+        let markers = L.markerClusterGroup({ spiderfyOnMaxZoom: false, disableClusteringAtZoom: 12 });
         let latLong = Array();
+        let marker;
 
         data.forEach(event => {
             latLong.push([event.latitude, event.longitude]);
-            L.marker(new L.LatLng(event.latitude, event.longitude))
-                .addTo(map)
+            
+            marker = L.marker(new L.LatLng(event.latitude, event.longitude))
                 .bindPopup(`
                     <b>Nom :</b> ${event.name}
                     <br>
@@ -38,7 +40,11 @@ class EventsAdmin {
                     <br>
                     <b>Durée :</b> ${event.duration} minutes
                 `);
+            
+            markers.addLayer(marker);
         });
+
+        map.addLayer(markers);
 
         let averageLatLong = new L.LatLngBounds(latLong);
         map.fitBounds(averageLatLong);
