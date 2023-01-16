@@ -577,6 +577,35 @@ class Post extends Calendar {
                 return res.redirect('/');
             });
         });
+
+        // Post route for regenerating an event code
+        app.post('/app/event/:idEvent/regenerate-code', accountController.isConnected, eventController.isOrganizer, (req, res) => {
+            const uuid = crypto.randomUUID();
+
+            let sql = `
+                SELECT * FROM events
+                WHERE uuid = ?
+            `;
+
+            mysql.query(sql, uuid, (error, results) => {
+                if (error) {
+                    return res.redirect('/internal-error');
+                }
+
+                sql = `
+                    UPDATE events SET uuid = ?
+                    WHERE idEvent = ?
+                `;
+
+                mysql.query(sql, [uuid, req.params.idEvent], (error, results) => {
+                    if (error) {
+                        return res.redirect('/internal-error');
+                    }
+
+                    return res.redirect(`/app/event/${req.params.idEvent}`);
+                });
+            });
+        });
     }
 
     /**

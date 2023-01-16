@@ -31,8 +31,11 @@
                     <br>
                     <span>Code : </span>
                     <span class="fst-italic" id="uuid">{{uuid}}</span>
-                    <button type="button" class="btn btn-primary" id="copyEventCode">
+                    <button type="button" class="btn btn-secondary" id="copyEventCode">
                         <i class="bi bi-clipboard-check"></i>
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-regenerate-codee">
+                        <i class="bi bi-arrow-clockwise"></i>
                     </button>
                 {{/if}}
             </div>
@@ -47,7 +50,7 @@
             {{/if}}
 
             {{#ifNot isOrganizer}}
-                <div class="btn-group mt-5 float-end" role="group">
+                <div class="btn-group mt-5" role="group">
                     <button type="button" class="btn btn-warning btn-leave">Quitter l'apéro</button>
                 </div>
             {{/ifNot}}
@@ -102,6 +105,7 @@
 
     {{#if isOrganizer}}
         {{{deleteEvent}}}
+        {{{regenerateCode}}}
     {{/if}}
 
     {{#ifNot isOrganizer}}
@@ -125,6 +129,7 @@
             eventManager.deleteUserButton();
             eventManager.editEventButton({{idEvent}});
             eventManager.copyEventCodeButton();
+            eventManager.regenerateEventCodeButton({{idEvent}});
             eventManager.deleteEventButton({{idEvent}})
         </script>
     {{/if}}

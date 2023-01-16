@@ -17,6 +17,7 @@ exports.deleteUser = fs.readFileSync(path.join(__dirname, '../components/app/mod
 exports.deleteEvent = fs.readFileSync(path.join(__dirname, '../components/app/modals/deleteEvent.html'));
 exports.leaveEvent = fs.readFileSync(path.join(__dirname, '../components/app/modals/leaveEvent.html'));
 exports.confirmDeleteEvent = fs.readFileSync(path.join(__dirname, '../components/admin/modals/confirmDeleteEvent.html'));
+exports.regenerateCode = fs.readFileSync(path.join(__dirname, '../components/app/modals/regenerateCode.html'));
 
 // Exports errors page
 exports.forbidden = path.join(__dirname, '../components/errors/403.html');

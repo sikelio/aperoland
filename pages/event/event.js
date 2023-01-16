@@ -1,4 +1,8 @@
 class EventManager {
+    /**
+     * Add event for deleting for users from an event
+     * @returns {void}
+     */
     deleteUserButton() {
         const deleteButtons = document.getElementsByClassName('btn-delete');
         const deleteUser = document.getElementById('deleteUser');
@@ -67,6 +71,23 @@ class EventManager {
         btn.addEventListener('click', (e) => {
             navigator.clipboard.writeText(uuid.textContent);
         });
+    }
+
+    /**
+     * Event for regenerate the event code
+     * @returns {void}
+     */
+    regenerateEventCodeButton(idEvent) {
+        const regenerateCodeButton = document.getElementsByClassName('btn-regenerate-codee');
+        const regenerateCode = document.getElementById('regenerateCode');
+        
+        for (let i = 0; i < regenerateCodeButton.length; i++) {
+            regenerateCodeButton[i].addEventListener('click', (e) => {
+                let regenerateCodeModal = new bootstrap.Modal(regenerateCode);
+                regenerateCodeModal.show();
+                regenerateCodeModal['_element'].querySelector('form').action = `/app/event/${idEvent}/regenerate-code`;
+            });
+        }
     }
 
     /**

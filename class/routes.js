@@ -16,6 +16,7 @@ class Routes extends Calendar {
     /**
      * Init of all types of routes
      * @param {function} app ExpressJS functions
+     * @returns {void}
      */
     init(app) {
         this.#public(app);
@@ -277,6 +278,7 @@ class Routes extends Calendar {
                                 deleteUser: components.deleteUser,
                                 leaveEvent: components.leaveEvent,
                                 deleteEvent: components.deleteEvent,
+                                regenerateCode: components.regenerateCode,
                                 idEvent: eventInfo.idEvent,
                                 date: eventInfo.date,
                                 time: eventInfo.time
@@ -311,6 +313,7 @@ class Routes extends Calendar {
             });
         });
 
+        // Change account info
         app.get('/app/account', accountController.isConnected, async (req, res) => {
             try {
                 const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
