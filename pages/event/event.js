@@ -119,4 +119,17 @@ class EventManager {
             });
         }
     }
+
+    addShoppingListItemButton(idEvent) {
+        const addArticleButton = document.getElementsByClassName('btn-add-article');
+        const addArticle = document.getElementById('addArticle');
+        
+        for (let i = 0; i < addArticleButton.length; i++) {
+            addArticleButton[i].addEventListener('click', (e) => {
+                let addArticleModal = new bootstrap.Modal(addArticle);
+                addArticleModal.show();
+                addArticleModal['_element'].querySelector('form').action = `/app/event/${idEvent}/add-article`;
+            });
+        }
+    }
 }

@@ -16,7 +16,7 @@ class Routes extends Calendar {
     /**
      * Init of all types of routes
      * @param {function} app ExpressJS functions
-     * @returns {void}
+     * @returns {void} Page
      */
     init(app) {
         this.#public(app);
@@ -252,6 +252,8 @@ class Routes extends Calendar {
                             return res.redirect('/internal-error');
                         }
 
+                        let participants = results;
+
                         try {
                             const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
                                 process.env.JWT_SECRET
@@ -263,25 +265,38 @@ class Routes extends Calendar {
                                 isOrganizer = true;
                             }
 
-                            return res.render('event', {
-                                navbar: this.#getNavbar(decoded.role),
-                                eventName: eventInfo.name,
-                                organizer: eventInfo.username,
-                                description: eventInfo.description,
-                                isOrganizer: isOrganizer,
-                                uuid: eventInfo.uuid,
-                                calendar: `/app/event/${eventInfo.idEvent}/calendar`,
-                                participants: results,
-                                latitude: eventInfo.latitude,
-                                longitude: eventInfo.longitude,
-                                editEvent: components.editEvent,
-                                deleteUser: components.deleteUser,
-                                leaveEvent: components.leaveEvent,
-                                deleteEvent: components.deleteEvent,
-                                regenerateCode: components.regenerateCode,
-                                idEvent: eventInfo.idEvent,
-                                date: eventInfo.date,
-                                time: eventInfo.time
+                            sql = `
+                                SELECT * FROM shoppinglistitems
+                                WHERE idEvent = ?
+                            `;
+
+                            mysql.query(sql, eventInfo.idEvent, (error, results) => {
+                                if (error) {
+                                    return res.redirect('/internal-error');
+                                }
+
+                                return res.render('event', {
+                                    navbar: this.#getNavbar(decoded.role),
+                                    eventName: eventInfo.name,
+                                    organizer: eventInfo.username,
+                                    description: eventInfo.description,
+                                    isOrganizer: isOrganizer,
+                                    uuid: eventInfo.uuid,
+                                    calendar: `/app/event/${eventInfo.idEvent}/calendar`,
+                                    participants: participants,
+                                    shoppingList: results,
+                                    latitude: eventInfo.latitude,
+                                    longitude: eventInfo.longitude,
+                                    editEvent: components.editEvent,
+                                    deleteUser: components.deleteUser,
+                                    leaveEvent: components.leaveEvent,
+                                    deleteEvent: components.deleteEvent,
+                                    addArticle: components.addArticle,
+                                    regenerateCode: components.regenerateCode,
+                                    idEvent: eventInfo.idEvent,
+                                    date: eventInfo.date,
+                                    time: eventInfo.time
+                                });
                             });
                         } catch (error) {
                             return res.redirect('/internal-error');

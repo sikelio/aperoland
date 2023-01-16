@@ -5,3 +5,17 @@ main > .container {
 #map {
 	height: 500px;
 }
+
+input#item {
+    border-top-right-radius: unset !important;
+    border-bottom-right-radius: unset !important;
+}
+
+input#quantitie {
+    border-radius: unset !important;
+}
+
+select#unit {
+    border-top-left-radius: unset !important;
+    border-bottom-left-radius: unset !important;
+}

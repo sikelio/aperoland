@@ -606,6 +606,21 @@ class Post extends Calendar {
                 });
             });
         });
+
+        // Post route for adding article to shopping list
+        app.post('/app/event/:idEvent/add-article', accountController.isConnected, eventController.isOrganizer, (req, res) => {
+            let sql = `INSERT INTO shoppinglistitems SET idEvent = ?, item = ?, quantitie = ?, unit = ?`;
+
+            const { item, quantitie, unit } = req.body;
+
+            mysql.query(sql, [req.params.idEvent, item, quantitie, `${unit}` ], (error, results) => {
+                if (error) {
+                    return res.redirect('/internal-error');
+                }
+
+                return res.redirect(`/app/event/${req.params.idEvent}`);
+            });
+        });
     }
 
     /**
