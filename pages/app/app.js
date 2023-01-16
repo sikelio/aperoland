@@ -87,5 +87,18 @@ class App {
         L.marker(new L.LatLng(latitude, longitude))
             .addTo(map)
             .bindPopup(eventName);
+
+        let tabs = document.getElementById('eventTabs');
+        let tabsButtons = tabs.querySelectorAll('.nav-link');
+
+        for (let i = 0; i < tabsButtons.length; i++) {
+            tabsButtons[i].addEventListener('click', (e) => {
+                if (e.currentTarget.dataset.tab != 'location') {
+                    return;
+                }
+
+                map.invalidateSize();
+            });
+        }
     }
 }

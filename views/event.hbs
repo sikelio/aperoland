@@ -55,48 +55,71 @@
                 </div>
             {{/ifNot}}
 
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12 table-responsive">
-                <table class="table mt-2">
-                    <thead>
-                        {{#if isOrganizer}}
-                            <th scope="col">#</th>
-                        {{/if}}
-                        <th scope="col">Participants</th>
-                        <th scope="col">Email</th>
-                    </thead>
-                    <tbody>
-                        {{#if participants}}
-                            {{#each participants}}
-                                <tr>
-                                    {{#ifEquals status 'Organizer'}}
-                                        {{#if ../isOrganizer}}
-                                            <td></td>
-                                        {{/if}}
-                                        <td>
-                                            <i class="bi bi-star"></i>
-                                            {{username}}
-                                        </td>
-                                    {{/ifEquals}}
-                                    {{#ifEquals status 'Participant'}}
-                                        {{#if ../isOrganizer}}
-                                            <td>
-                                                <button type="button" class="btn btn-danger btn-delete" data-user="{{idUser}}" data-event="{{idEvent}}">
-                                                    <i class="bi bi-person-x" data-user="{{idUser}}"></i>
-                                                </button>
-                                            </td>
-                                        {{/if}}
-                                        <td class="username">{{username}}</td>
-                                    {{/ifEquals}}
-                                    <td>{{email}}</td>
-                                </tr>
-                            {{/each}}
-                        {{else}}
-                            <td>Aucun participant</td>
-                        {{/if}}
-                    </tbody>
-                </table>
+            <div class="mt-3">
+                <ul class="nav nav-tabs" id="eventTabs">
+                    <li class="nav-item">
+                        <a href="#attendees" class="nav-link active" data-bs-toggle="tab">Participants</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#emplacement" class="nav-link" data-bs-toggle="tab" data-tab="location">Emplacement</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#list" class="nav-link" data-bs-toggle="tab">Liste de course</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="attendees">
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12 table-responsive">
+                            <table class="table mt-2">
+                                <thead>
+                                    {{#if isOrganizer}}
+                                        <th scope="col">#</th>
+                                    {{/if}}
+                                    <th scope="col">Participants</th>
+                                    <th scope="col">Email</th>
+                                </thead>
+                                <tbody>
+                                    {{#if participants}}
+                                        {{#each participants}}
+                                            <tr>
+                                                {{#ifEquals status 'Organizer'}}
+                                                    {{#if ../isOrganizer}}
+                                                        <td></td>
+                                                    {{/if}}
+                                                    <td>
+                                                        <i class="bi bi-star"></i>
+                                                        {{username}}
+                                                    </td>
+                                                {{/ifEquals}}
+                                                {{#ifEquals status 'Participant'}}
+                                                    {{#if ../isOrganizer}}
+                                                        <td>
+                                                            <button type="button" class="btn btn-danger btn-delete" data-user="{{idUser}}" data-event="{{idEvent}}">
+                                                                <i class="bi bi-person-x" data-user="{{idUser}}"></i>
+                                                            </button>
+                                                        </td>
+                                                    {{/if}}
+                                                    <td class="username">{{username}}</td>
+                                                {{/ifEquals}}
+                                                <td>{{email}}</td>
+                                            </tr>
+                                        {{/each}}
+                                    {{else}}
+                                        <td>Aucun participant</td>
+                                    {{/if}}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="emplacement">
+                        <div class="mb-3 mt-2" id="map"></div>
+                    </div>
+                    <div class="tab-pane fade" id="list">
+                        <h4 class="mt-2">Liste de course</h4>
+                    </div>
+                </div>
             </div>
-            <div class="mb-3" id="map"></div>
         </div>
     </main>
 
