@@ -275,6 +275,8 @@ class Routes extends Calendar {
                                 longitude: eventInfo.longitude,
                                 editEvent: components.editEvent,
                                 deleteUser: components.deleteUser,
+                                leaveEvent: components.leaveEvent,
+                                deleteEvent: components.deleteEvent,
                                 idEvent: eventInfo.idEvent,
                                 date: eventInfo.date,
                                 time: eventInfo.time
@@ -434,6 +436,7 @@ class Routes extends Calendar {
 
                         return res.render('events', {
                             navbar: components.adminNavbar,
+                            confirmDeleteEvent: components.confirmDeleteEvent,
                             events: results
                         });
                     });

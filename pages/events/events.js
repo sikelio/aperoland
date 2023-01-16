@@ -6,10 +6,14 @@ class EventsAdmin {
     eventsList() {
         axios.post('/admin/events/get-events')
             .then((response) => {
-                this.#leafletAdminMap('map', response.data)
+                if (response.data.length == 0) {
+                    return;
+                }
+
+                return this.#leafletAdminMap('map', response.data)
             })
             .catch((error) => {
-                console.error(error);
+                return console.error(error);
             });
     }
 
@@ -53,5 +57,20 @@ class EventsAdmin {
             maxZoom: 19,
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(map);
+    }
+
+    deleteEvent() {
+        const deleteButtons = document.getElementsByClassName('btn-delete-event');
+        const confirmDeleteEvent = document.getElementById('confirmDeleteEvent');
+        
+        for (let i = 0; i < deleteButtons.length; i++) {
+            deleteButtons[i].addEventListener('click', (e) => {
+                let idEvent = e.currentTarget.dataset.event;
+
+                let confirmDeleteEventModal = new bootstrap.Modal(confirmDeleteEvent);
+                confirmDeleteEventModal.show();
+                confirmDeleteEventModal['_element'].querySelector('form').action = `/admin/events/${idEvent}/delete-event`;
+            });
+        }
     }
 }

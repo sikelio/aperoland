@@ -74,9 +74,43 @@ exports.isOrganizer = (req, res, next) => {
                 return res.redirect('/forbidden');
             }
 
-            next();
+            return next();
         } catch (error) {
-            req.redirect('/');
+            return req.redirect('/');
+        }
+    });
+};
+
+/**
+ * Method to check if user is not the organizer of the event
+ * @param {object} req ExpressJS request data
+ * @param {function} res ExpressJS response functions
+ * @param {function} next Go to next middleware
+ * @returns {next}
+ */
+exports.isNotOrganizer = (req, res, next) => {
+    let sql = `
+        SELECT * FROM events
+        WHERE idEvent = ?
+    `;
+
+    mysql.query(sql, req.params.idEvent, async (error, results) => {
+        if (error) {
+            return res.redirect('/internal-error');
+        }
+
+        try {
+            const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
+                process.env.JWT_SECRET
+            );
+
+            if (results[0].idUser == decoded.idUser) {
+                return res.redirect('/forbidden');
+            }
+
+            return next();
+        } catch (error) {
+            return req.redirect('/');
         }
     });
 };

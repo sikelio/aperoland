@@ -68,4 +68,34 @@ class EventManager {
             navigator.clipboard.writeText(uuid.textContent);
         });
     }
+
+    /**
+     * Leave function confirmation
+     * @param {number} idEvent ID of the event
+     */
+    leaveEventButton(idEvent) {
+        const leaveButton = document.getElementsByClassName('btn-leave');
+        const leaveEvent = document.getElementById('leaveEvent');
+        
+        for (let i = 0; i < leaveButton.length; i++) {
+            leaveButton[i].addEventListener('click', (e) => {
+                let leaveEventModal = new bootstrap.Modal(leaveEvent);
+                leaveEventModal.show();
+                leaveEventModal['_element'].querySelector('form').action = `/app/event/${idEvent}/leave-event`;
+            });
+        }
+    }
+
+    deleteEventButton(idEvent) {
+        const deleteButton = document.getElementsByClassName('btn-delete-event');
+        const deleteEvent = document.getElementById('deleteEvent');
+        
+        for (let i = 0; i < deleteButton.length; i++) {
+            deleteButton[i].addEventListener('click', (e) => {
+                let leaveEventModal = new bootstrap.Modal(deleteEvent);
+                leaveEventModal.show();
+                leaveEventModal['_element'].querySelector('form').action = `/app/event/${idEvent}/delete-event`;
+            });
+        }
+    }
 }

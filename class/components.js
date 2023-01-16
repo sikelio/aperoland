@@ -14,6 +14,9 @@ exports.addQuote = fs.readFileSync(path.join(__dirname, '../components/admin/mod
 exports.confirmDeleteUser = fs.readFileSync(path.join(__dirname, '../components/admin/modals/confirmDeleteUser.html'));
 exports.editEvent = fs.readFileSync(path.join(__dirname, '../components/app/modals/editEvent.html'));
 exports.deleteUser = fs.readFileSync(path.join(__dirname, '../components/app/modals/deleteUser.html'));
+exports.deleteEvent = fs.readFileSync(path.join(__dirname, '../components/app/modals/deleteEvent.html'));
+exports.leaveEvent = fs.readFileSync(path.join(__dirname, '../components/app/modals/leaveEvent.html'));
+exports.confirmDeleteEvent = fs.readFileSync(path.join(__dirname, '../components/admin/modals/confirmDeleteEvent.html'));
 
 // Exports errors page
 exports.forbidden = path.join(__dirname, '../components/errors/403.html');

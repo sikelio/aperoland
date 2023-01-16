@@ -537,6 +537,46 @@ class Post extends Calendar {
                 return res.redirect('/');
             }
         });
+
+        // Post route for leaving an event
+        app.post('/app/event/:idEvent/leave-event', accountController.isConnected, eventController.isNotOrganizer, async (req, res) => {
+            try {
+                const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
+                    process.env.JWT_SECRET
+                );
+
+                let sql = `
+                    DELETE FROM eventsparticipate
+                    WHERE idUser = ? AND idEvent = ?
+                `;
+
+                mysql.query(sql, [decoded.idUser, req.params.idEvent], (error, results) => {
+                    if (error) {
+                        return res.redirect('/internal-error');
+                    }
+
+                    return res.redirect('/');
+                });
+            } catch (error) {
+                return res.redirect('/');
+            }
+        });
+
+        // Post route for deleting an event
+        app.post('/app/event/:idEvent/delete-event', accountController.isConnected, eventController.isOrganizer, (req, res) => {
+            let sql = `
+                DELETE FROM events
+                WHERE idEvent = ?
+            `;
+
+            mysql.query(sql, req.params.idEvent, (error, results) => {
+                if (error) {
+                    return res.redirect('/internal-error');
+                }
+
+                return res.redirect('/');
+            });
+        });
     }
 
     /**
@@ -624,6 +664,21 @@ class Post extends Calendar {
                 }
 
                 return res.send(results);
+            });
+        });
+
+        app.post('/admin/events/:idEvent/delete-event', adminController.isAdmin, (req, res) => {
+            let sql = `
+                DELETE FROM events
+                WHERE idEvent = ?
+            `;
+
+            mysql.query(sql, req.params.idEvent, (error, results) => {
+                if (error) {
+                    return res.redirect('/internal-error');
+                }
+
+                return res.redirect('/admin/events');
             });
         });
     }

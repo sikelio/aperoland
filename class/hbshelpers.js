@@ -15,6 +15,14 @@ class HbsHelper {
         });
 
         /**
+         * Creation of the method ifNot
+         * Check if value doesn't exist
+         */
+        hbs.registerHelper('ifNot', function(arg1, options) {
+            return (!arg1) ? options.fn(this) : options.inverse(this);
+        });
+
+        /**
          * Creation of the method switch
          * Add a value to this
          */
