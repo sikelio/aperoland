@@ -148,6 +148,44 @@ class Mail {
             return '200';
         });
     }
+
+    sendNewCode(to, username, newCode) {
+        const options = {
+            viewEngine: {
+                extname: '.hbs',
+                layoutsDir: 'views/emails/',
+                defaultLayout: 'resend-code',
+                partialsDir: 'views/emails'
+            },
+            viewPath: 'views/emails',
+            extName: '.hbs'
+        };
+
+        transporter.use('compile', hbs(options));
+        transporter.sendMail({
+            from: 'contact@sikelio.wtf',
+            to: to,
+            subject: 'Votre nouveau code de confirmation',
+            template: 'resend-code',
+            attachments: [{
+                filename: 'logo.png',
+                path: path.join(__dirname, '../pages/public/logo.png'),
+                cid: 'logo'
+            }],
+            context: {
+                username: username,
+                baseUrl: `${process.env.URL}/confirm/${newCode}`,
+                projectName: info.displayName,
+                currentYear: new Date().getFullYear(),
+            }
+        }, (err, info) => {
+            if (err) {
+                return '502';
+            }
+
+            return '200';
+        });
+    }
 }
 
 module.exports = Mail;

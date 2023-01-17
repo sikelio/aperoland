@@ -129,7 +129,10 @@ class Routes extends Calendar {
                 }
 
                 if (results.length != 1) {
-                    return res.redirect('/');
+                    return res.render('confirmation', {
+                        alreadyConfirmed: true,
+                        message: 'Erreur'
+                    });
                 }
 
                 try {
@@ -140,10 +143,16 @@ class Routes extends Calendar {
                             return res.redirect('/internal-error');
                         }
     
-                        return res.render('confirmation');
+                        return res.render('confirmation', {
+                            success: true,
+                            message: 'Succes'
+                        });
                     });
                 } catch (error) {
-                    return res.redirect('/');
+                    return res.render('confirmation', {
+                        expired: true,
+                        message: 'Erreur'
+                    });
                 }
             });
         });

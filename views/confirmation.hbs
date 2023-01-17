@@ -1,1 +1,58 @@
-succes
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/libs/bootstrap@5.3.0-alpha1/bootstrap.min.css">
+    <link rel="stylesheet" href="/libs/bootstrap-icons@1.10.2/bootstrap-icons.css">
+    <title>Aperoland - Confirmation de compte</title>
+</head>
+<body>
+    <div class="d-flex align-items-center justify-content-center vh-100">
+        <div class="text-center">
+            <p class="fs-3">
+                <h1 class="display-1 fw-bold">
+                    {{message}}
+                </h1>
+                
+                {{#if info}}
+                    info
+                {{/if}}
+
+                {{#if expired}}
+                    Le code d'activation à expiré
+                {{/if}}
+
+                {{#if alreadyConfirmed}}
+                    Le code est soit invalide, soit le compte est déjà activé !
+                {{/if}}
+
+                {{#if success}}
+                    Votre compte est activé, Vous pouvez dès à présent vous connecter.
+                {{/if}}
+            </p>
+
+            {{#ifNot expired}}
+                <a href="/app/home" class="btn btn-primary">Accueil</a>
+            {{/ifNot}}
+            {{#if expired}}
+                <form action="/confirm/reset-code" method="post">
+                    <h1 class="h4 mb-3 fw-normal">Regénérer un code</h1>
+
+                    <div class="mb-3">
+                        <input type="email" class="form-control" placeholder="name@example.com" name="email" required>
+                        <div class="invalid-feedback">
+                            Veuillez renseigner une adresse mail
+                        </div>
+                    </div>
+
+                    <button class="w-100 btn btn-lg btn-primary" type="submit">Regénérer</button>
+                </form>
+            {{/if}}
+        </div>
+    </div>
+
+    <script src="/libs/bootstrap@5.3.0-alpha1/bootstrap.bundle.min.js"></script>
+</body>
+</html>

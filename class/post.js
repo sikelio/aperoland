@@ -176,6 +176,51 @@ class Post extends Calendar {
                 });
             }
         });
+
+        app.post('/confirm/reset-code', (req, res) => {
+            const { email } = req.body;
+
+            let sql = `
+                SELECT * FROM users
+                WHERE email = ?
+            `;
+
+            mysql.query(sql, email, (error, results) => {
+                if (error) {
+                    return res.redirect('/internal-error');
+                }
+
+                if (results.length == 0) {
+                    return res.render('confirmation', {
+                        info: 'Si l\'adresse mail existe vous recevrez un mail',
+                        message: 'Succes'
+                    });
+                }
+
+                const username = results[0].username;
+                const newCode = jwt.sign({ idUser: results[0].idUser }, process.env.JWT_SECRET, {
+                    expiresIn:process.env.JWT_RESET_EXPIRES_IN
+                });
+
+                sql = `
+                    UPDATE users
+                    SET confirmationToken = ? WHERE idUser = ?
+                `;
+
+                mysql.query(sql, [newCode, results[0].idUser], (error, results) => {
+                    if (error) {
+                        return res.redirect('/internal-error');
+                    }
+
+                    mail.sendNewCode(email, username, newCode);
+
+                    return res.render('confirmation', {
+                        info: 'Si l\'adresse mail existe vous recevrez un mail',
+                        message: 'Succes'
+                    });
+                });
+            });
+        });
     }
 
     /**
