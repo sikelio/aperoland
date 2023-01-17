@@ -275,36 +275,52 @@ class Routes extends Calendar {
                             }
 
                             sql = `
-                                SELECT * FROM shoppinglistitems
+                                SELECT *, DATE_FORMAT(date, '%Y-%m-%d') AS date FROM chat
                                 WHERE idEvent = ?
+                                ORDER BY date, time DESC
                             `;
 
-                            mysql.query(sql, eventInfo.idEvent, (error, results) => {
+                            mysql.query(sql, req.params.idEvent, (error, results) => {
                                 if (error) {
                                     return res.redirect('/internal-error');
                                 }
 
-                                return res.render('event', {
-                                    navbar: this.#getNavbar(decoded.role),
-                                    eventName: eventInfo.name,
-                                    organizer: eventInfo.username,
-                                    description: eventInfo.description,
-                                    isOrganizer: isOrganizer,
-                                    uuid: eventInfo.uuid,
-                                    calendar: `/app/event/${eventInfo.idEvent}/calendar`,
-                                    participants: participants,
-                                    shoppingList: results,
-                                    latitude: eventInfo.latitude,
-                                    longitude: eventInfo.longitude,
-                                    editEvent: components.editEvent,
-                                    deleteUser: components.deleteUser,
-                                    leaveEvent: components.leaveEvent,
-                                    deleteEvent: components.deleteEvent,
-                                    addArticle: components.addArticle,
-                                    regenerateCode: components.regenerateCode,
-                                    idEvent: eventInfo.idEvent,
-                                    date: eventInfo.date,
-                                    time: eventInfo.time
+                                let chats = results;
+
+                                sql = `
+                                    SELECT * FROM shoppinglistitems
+                                    WHERE idEvent = ?
+                                `;
+
+                                mysql.query(sql, eventInfo.idEvent, (error, results) => {
+                                    if (error) {
+                                        return res.redirect('/internal-error');
+                                    }
+
+                                    return res.render('event', {
+                                        navbar: this.#getNavbar(decoded.role),
+                                        eventName: eventInfo.name,
+                                        organizer: eventInfo.username,
+                                        description: eventInfo.description,
+                                        isOrganizer: isOrganizer,
+                                        uuid: eventInfo.uuid,
+                                        calendar: `/app/event/${eventInfo.idEvent}/calendar`,
+                                        participants: participants,
+                                        chats: chats,
+                                        shoppingList: results,
+                                        latitude: eventInfo.latitude,
+                                        longitude: eventInfo.longitude,
+                                        editEvent: components.editEvent,
+                                        deleteUser: components.deleteUser,
+                                        leaveEvent: components.leaveEvent,
+                                        deleteEvent: components.deleteEvent,
+                                        addArticle: components.addArticle,
+                                        regenerateCode: components.regenerateCode,
+                                        idEvent: eventInfo.idEvent,
+                                        date: eventInfo.date,
+                                        time: eventInfo.time,
+                                        username: decoded.username
+                                    });
                                 });
                             });
                         } catch (error) {

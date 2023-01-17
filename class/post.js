@@ -130,6 +130,7 @@ class Post extends Calendar {
                         }
 
                         const idUser = results[0].idUser;
+                        const username = results[0].username;
                         const role = results[0].role;
                         const ip = req.ip;
 
@@ -151,7 +152,7 @@ class Post extends Calendar {
                                 return res.redirect('/internal-error');
                             }
                             
-                            const token = jwt.sign({ idUser, role }, process.env.JWT_SECRET, {
+                            const token = jwt.sign({ idUser, username, role }, process.env.JWT_SECRET, {
                                 expiresIn: process.env.JWT_EXPIRES_IN
                             });
     

@@ -101,4 +101,34 @@ class App {
             });
         }
     }
+
+    initChat(username, idEvent) {
+        const socket = io();
+
+        const messages = document.getElementById('messages');
+        const form = document.getElementById('form');
+        const input = document.getElementById('input');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            if (input.value) {
+                socket.emit('chat message', {
+                    username: username,
+                    msg: input.value,
+                    idEvent: idEvent
+                });
+
+                input.value = '';
+            }
+        });
+
+        socket.on('chat message', function(msg) {
+            var item = document.createElement('li');
+            item.textContent = `le ${msg.date} à ${msg.time} : ${msg.username} : ${msg.msg}`;
+
+            messages.prepend(item);
+            window.scrollTo(0, document.body.scrollHeight);
+        });
+    }
 }

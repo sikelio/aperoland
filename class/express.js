@@ -3,6 +3,7 @@ require('dotenv').config();
 const cookieParser = require('cookie-parser');
 const cors = require('cors')
 const express = require('express');
+const http = require('http');
 
 // Import of class
 const API = require('./api');
@@ -10,6 +11,7 @@ const Files = require('./files');
 const HbsHelpers = require('./hbshelpers');
 const Post = require('./post');
 const Routes = require('./routes');
+const SocketIO = require('./socketio');
 
 // Instantiation of class
 const api = new API;
@@ -17,8 +19,10 @@ const files = new Files;
 const hbsHelpers = new HbsHelpers;
 const post = new Post;
 const routes = new Routes;
+const socketIO = new SocketIO;
 
 const app = express();
+const server = http.createServer(app);
 
 class Express {
     // Private variables
@@ -29,6 +33,9 @@ class Express {
      * @returns {void}
      */
     init() {
+        // Initialization of socket io server
+        socketIO.init(server);
+
         // Initialization of hbs helpers
         hbsHelpers.register();
 
@@ -70,7 +77,7 @@ class Express {
         });
 
         // Launch of the web server on specified port
-        app.listen(this.#port, () => {
+        server.listen(this.#port, () => {
             console.log(`Aperoland launched on port ${this.#port}`);
         });
     }
