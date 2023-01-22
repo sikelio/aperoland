@@ -23,7 +23,7 @@ class SocketIO {
      * @param {object} msg Data of message
      * @returns {message}
      */
-    async #chatBox(msg) {
+    #chatBox(msg) {
         let sql = `
             INSERT INTO chat SET ?
         `;

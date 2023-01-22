@@ -156,6 +156,11 @@ class Routes extends Calendar {
                 }
             });
         });
+
+        // Quick join event link
+        app.get('/join-event/:uuid', eventController.eventExist, accountController.isAlreadyConnected, (req, res) => {
+            // TODO
+        });
     }
 
     /**

@@ -667,6 +667,28 @@ class Post extends Calendar {
                 return res.redirect(`/app/event/${req.params.idEvent}`);
             });
         });
+
+        // Post route for inviting people to an event
+        app.post('/app/event/:idEvent/send-invites', accountController.isConnected, eventController.isOrganizer, (req, res) => {
+            const { emails } = req.body;
+            const formatEmail = emails.split(',');
+
+            let sql = `
+                SELECT users.username AS organizer, events.uuid FROM events
+                RIGHT JOIN users ON events.idUser = users.idUser
+                WHERE idEvent = ?
+            `;
+
+            mysql.query(sql, req.params.idEvent, (error, results) => {
+                if (error) {
+                    return res.redirect('/internal-error');
+                }
+
+                mail.sendInvite(formatEmail, results[0].organizer, results[0].uuid);
+
+                return res.redirect(`/app/event/${req.params.idEvent}`);
+            });
+        });
     }
 
     /**

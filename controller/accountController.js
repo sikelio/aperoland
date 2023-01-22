@@ -1,6 +1,7 @@
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
+const mysql = require('../config/mysql');
 
 /**
  * Check if user is connected
@@ -22,3 +23,46 @@ exports.isConnected = async (req, res, next) => {
         return res.redirect('/');
     }
 }
+
+/**
+ * Check if user is already connected connected
+ * @param {object} req ExpressJS request data
+ * @param {function} res ExpressJS response functions
+ * @param {function} next Go to next middleware
+ * @returns {next}
+ */
+exports.isAlreadyConnected = (req, res, next) => {
+    let sql =  `
+        SELECT * FROM events
+        WHERE uuid = ?
+    `;
+
+    mysql.query(sql, req.params.uuid, async (error, results) => {
+        if (error) {
+            return res.redirect('/internal-error');
+        }
+
+        let idEvent = results[0].idEvent;
+
+        try {
+            const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
+                process.env.JWT_SECRET
+            );
+
+            sql = `
+                INSERT INTO eventsparticipate
+                SET ?
+            `;
+
+            mysql.query(sql, { idEvent: idEvent, idUser: decoded.idUser }, (error, results) => {
+                if (error) {
+                    return res.redirect('/internal-error');
+                }
+
+                return res.redirect(`/app/event/${idEvent}`);
+            });
+        } catch (error) {
+            return next();
+        }
+    });
+};

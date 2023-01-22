@@ -149,6 +149,13 @@ class Mail {
         });
     }
 
+    /**
+     * Send new confirmation account token
+     * @param {string} to Recipent
+     * @param {string} username Recipent username
+     * @param {string} newCode New code for account confirmation
+     * @returns {void}
+     */
     sendNewCode(to, username, newCode) {
         const options = {
             viewEngine: {
@@ -175,6 +182,46 @@ class Mail {
             context: {
                 username: username,
                 baseUrl: `${process.env.URL}/confirm/${newCode}`,
+                projectName: info.displayName,
+                currentYear: new Date().getFullYear(),
+            }
+        }, (err, info) => {
+            if (err) {
+                return '502';
+            }
+
+            return '200';
+        });
+    }
+
+    sendInvite(emails, organizer, eventCode) {
+        console.error(typeof to);
+
+        const options = {
+            viewEngine: {
+                extname: '.hbs',
+                layoutsDir: 'views/emails/',
+                defaultLayout: 'invite',
+                partialsDir: 'views/emails'
+            },
+            viewPath: 'views/emails',
+            extName: '.hbs'
+        };
+
+        transporter.use('compile', hbs(options));
+        transporter.sendMail({
+            from: 'contact@sikelio.wtf',
+            bcc: emails,
+            subject: 'Invitatation',
+            template: 'invite',
+            attachments: [{
+                filename: 'logo.png',
+                path: path.join(__dirname, '../pages/public/logo.png'),
+                cid: 'logo'
+            }],
+            context: {
+                organizer: organizer,
+                baseUrl: `${process.env.URL}/join-event/${eventCode}`,
                 projectName: info.displayName,
                 currentYear: new Date().getFullYear(),
             }

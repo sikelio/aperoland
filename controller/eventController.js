@@ -142,3 +142,29 @@ exports.deleteOldIcsFile = (req, res, next) => {
         return next();
     });
 };
+
+/**
+ * Check if event exist
+ * @param {object} req ExpressJS request data
+ * @param {function} res ExpressJS response functions
+ * @param {function} next Go to next middleware
+ * @returns {next}
+ */
+exports.eventExist = (req, res, next) => {
+    let sql = `
+        SELECT * FROM events
+        WHERE idEvent = ?
+    `;
+
+    mysql.query(sql, req.params.uuid, (error, results) => {
+        if (error) {
+            return res.redirect('/internal-error');
+        }
+
+        if (results.length == 0) {
+            return res.redirect('/not found');
+        }
+
+        return next();
+    });
+};
