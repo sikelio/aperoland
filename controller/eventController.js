@@ -153,7 +153,7 @@ exports.deleteOldIcsFile = (req, res, next) => {
 exports.eventExist = (req, res, next) => {
     let sql = `
         SELECT * FROM events
-        WHERE idEvent = ?
+        WHERE uuid = ?
     `;
 
     mysql.query(sql, req.params.uuid, (error, results) => {

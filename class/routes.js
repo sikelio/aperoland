@@ -158,7 +158,7 @@ class Routes extends Calendar {
         });
 
         // Quick join event link
-        app.get('/join-event/:uuid', eventController.eventExist, accountController.isAlreadyConnected, (req, res) => {
+        app.get('/join-event/:uuid', eventController.eventExist, accountController.isAlreadyConnected, accountController.userExist, (req, res) => {
             // TODO
         });
     }

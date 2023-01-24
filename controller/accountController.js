@@ -50,19 +50,45 @@ exports.isAlreadyConnected = (req, res, next) => {
             );
 
             sql = `
-                INSERT INTO eventsparticipate
-                SET ?
+                SELECT * FROM eventsparticipate
+                WHERE idUser = ? AND idEvent = ?
             `;
 
-            mysql.query(sql, { idEvent: idEvent, idUser: decoded.idUser }, (error, results) => {
+            mysql.query(sql, [decoded.idUser, idEvent], (error, results) => {
                 if (error) {
                     return res.redirect('/internal-error');
                 }
 
-                return res.redirect(`/app/event/${idEvent}`);
+                if (results.length > 0) {
+                    return res.redirect(`/app/event/${idEvent}`);
+                }
+
+                sql = `
+                    INSERT INTO eventsparticipate
+                    SET ?
+                `;
+
+                mysql.query(sql, { idEvent: idEvent, idUser: decoded.idUser }, (error, results) => {
+                    if (error) {
+                        return res.redirect('/internal-error');
+                    }
+
+                    return res.redirect(`/app/event/${idEvent}`);
+                });
             });
         } catch (error) {
             return next();
         }
     });
+};
+
+/**
+ * Check if user exist
+ * @param {object} req ExpressJS request data
+ * @param {function} res ExpressJS response functions
+ * @param {function} next Go to next middleware
+ * @returns {next}
+ */
+exports.userExist = (req, res, next) => {
+
 };
