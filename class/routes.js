@@ -77,13 +77,6 @@ class Routes extends Calendar {
             });
         });
 
-        // Logout code
-        app.post('/logout', (req, res) => {
-            res.clearCookie('aperolandTicket');
-
-            return res.redirect('/');
-        });
-
         // Registration confirm page
         app.get('/confirm/:confirmationToken', (req, res) => {
             const confirmationToken = req.params.confirmationToken;
@@ -360,105 +353,57 @@ class Routes extends Calendar {
      */
     #admin(app) {
         // User list page
-        app.get('/admin/users', async (req, res) => {
-            if (req.cookies.aperolandTicket) {
-                try {
-                    const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
-                        process.env.JWT_SECRET
-                    );
-
-                    if (decoded.role != 'Admin') {
-                        return res.redirect('/');
-                    }
-
-                    mysql.query('SELECT * FROM users WHERE role = \'User\'', (error, results) => {
-                        if (error) {
-                            return res.redirect('/internal-error');
-                        }
-
-                        return res.render('users', {
-                            navbar: components.adminNavbar,
-                            users: results,
-                            confirmDeleteUser: components.confirmDeleteUser
-                        });
-                    });
-                } catch (error) {
-                    res.redirect('/')
+        app.get('/admin/users', adminController.isAdmin, async (req, res) => {
+            mysql.query('SELECT * FROM users WHERE role = \'User\'', (error, results) => {
+                if (error) {
+                    return res.redirect('/internal-error');
                 }
-            } else {
-                return res.redirect('/');
-            }
+
+                return res.render('users', {
+                    navbar: components.adminNavbar,
+                    users: results,
+                    confirmDeleteUser: components.confirmDeleteUser
+                });
+            });
         });
 
         // Quotes list page
-        app.get('/admin/quotes', async (req, res) => {
-            if (req.cookies.aperolandTicket) {
-                try {
-                    const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
-                        process.env.JWT_SECRET
-                    );
-
-                    if (decoded.role != 'Admin') {
-                        return res.redirect('/');
-                    }
-
-                    mysql.query('SELECT * FROM quotes', (error, results) => {
-                        if (error) {
-                            return res.redirect('/internal-error');
-                        }
-
-                        return res.render('quotes', {
-                            navbar: components.adminNavbar,
-                            quotes: results,
-                            addQuote: components.addQuote
-                        });
-                    });
-                } catch (error) {
-                    res.redirect('/')
+        app.get('/admin/quotes', adminController.isAdmin, async (req, res) => {
+            mysql.query('SELECT * FROM quotes', (error, results) => {
+                if (error) {
+                    return res.redirect('/internal-error');
                 }
-            } else {
-                return res.redirect('/');
-            }
+
+                return res.render('quotes', {
+                    navbar: components.adminNavbar,
+                    quotes: results,
+                    addQuote: components.addQuote
+                });
+            });
         });
 
         // Events list page
-        app.get('/admin/events', async (req, res, next) => {
-            if (req.cookies.aperolandTicket) {
-                try {
-                    const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
-                        process.env.JWT_SECRET
-                    );
+        app.get('/admin/events', adminController.isAdmin, async (req, res, next) => {
+            let sql = `
+                SELECT E.idEvent, E.idUser, E.name, U.email, COUNT(EP.idUser) AS attendees, E.address,
+                DATE_FORMAT(E.date, '%Y-%m-%d') AS date, E.time, E.duration
+                FROM events AS E
+                RIGHT JOIN users AS U ON E.idUser = U.idUser
+                RIGHT JOIN (SELECT * FROM eventsparticipate) AS EP ON EP.idEvent = E.idEvent
+                GROUP BY E.idEvent
+            `;
 
-                    if (decoded.role != 'Admin') {
-                        return res.redirect('/');
-                    }
-
-                    let sql = `
-                        SELECT E.idEvent, E.idUser, E.name, U.email, COUNT(EP.idUser) AS attendees, E.address,
-                        DATE_FORMAT(E.date, '%Y-%m-%d') AS date, E.time, E.duration
-                        FROM events AS E
-                        RIGHT JOIN users AS U ON E.idUser = U.idUser
-                        RIGHT JOIN (SELECT * FROM eventsparticipate) AS EP ON EP.idEvent = E.idEvent
-                        GROUP BY E.idEvent
-                    `;
-
-                    mysql.query(sql, (error, results) => {
-                        if (error) {
-                            return res.redirect('/internal-error');
-                        }
-
-                        return res.render('events', {
-                            navbar: components.adminNavbar,
-                            confirmDeleteEvent: components.confirmDeleteEvent,
-                            events: results
-                        });
-                    });
-                } catch (error) {
-                    res.redirect('/')
+            mysql.query(sql, (error, results) => {
+                if (error) {
+                    return res.redirect('/internal-error');
                 }
-            } else {
-                return res.redirect('/');
-            }
+
+                return res.render('events', {
+                    navbar: components.adminNavbar,
+                    confirmDeleteEvent: components.confirmDeleteEvent,
+                    events: results
+                });
+            });
         });
     }
 

@@ -178,6 +178,12 @@ class Post extends Calendar {
             }
         });
 
+        app.post('/logout', (req, res) => {
+            res.clearCookie('aperolandTicket');
+
+            return res.redirect('/');
+        });
+
         app.post('/confirm/reset-code', (req, res) => {
             const { email } = req.body;
 
@@ -697,67 +703,37 @@ class Post extends Calendar {
      * @returns {void} Page
      */
     #admin(app) {
-        app.post('/admin/quotes/add-quote', async (req, res) => {
-            if (req.cookies.aperolandTicket) {
-                try {
-                    const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
-                        process.env.JWT_SECRET
-                    );
+        app.post('/admin/quotes/add-quote', adminController.isAdmin, async (req, res) => {
+            const { name, quote } = req.body
 
-                    if (decoded.role != 'Admin') {
-                        return res.redirect('/');
-                    }
+            const values = {
+                name: name,
+                quote: quote
+            };
 
-                    const { name, quote } = req.body
-
-                    const values = {
-                        name: name,
-                        quote: quote
-                    };
-
-                    mysql.query('INSERT INTO quotes SET ?', values, (error, results) => {
-                        if (error) {
-                            return res.redirect('/internal-error');
-                        }
-    
-                        return res.redirect('/admin/quotes');
-                    });
-                } catch (error) {
-                    return res.redirect('/');
+            mysql.query('INSERT INTO quotes SET ?', values, (error, results) => {
+                if (error) {
+                    return res.redirect('/internal-error');
                 }
-            } else {
-                return res.redirect('/');
-            }
+
+                return res.redirect('/admin/quotes');
+            });
         });
 
-        app.post('/admin/users/delete-user', async (req, res) => {
-            if (req.cookies.aperolandTicket) {
-                try {
-                    const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
-                        process.env.JWT_SECRET
-                    );
+        app.post('/admin/users/delete-user', adminController.isAdmin, async (req, res) => {
+            const { idUser } = req.body;
 
-                    if (decoded.role != 'Admin') {
-                        return res.redirect('/');
-                    }
-
-                    const { idUser } = req.body;
-
-                    if (!idUser || isNaN(idUser)) {
-                        return res.redirect('/admin/users');
-                    }
-        
-                    mysql.query('DELETE FROM users WHERE idUser = ?', idUser, (error) => {
-                        if (error) {
-                            return res.redirect('/internal-error');
-                        }
-
-                        return res.redirect('/admin/users');
-                    });
-                } catch (error) {
-                    return res.redirect('/');
-                }
+            if (!idUser || isNaN(idUser)) {
+                return res.redirect('/admin/users');
             }
+        
+            mysql.query('DELETE FROM users WHERE idUser = ?', idUser, (error) => {
+                if (error) {
+                    return res.redirect('/internal-error');
+                }
+
+                return res.redirect('/admin/users');
+            });
         });
 
         app.post('/admin/events/get-events', adminController.isAdmin, (req, res) => {
