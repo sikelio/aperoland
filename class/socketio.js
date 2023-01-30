@@ -3,6 +3,7 @@ const mysql = require('../config/mysql');
 
 class SocketIO {
     #io;
+    #users = [];
 
     /**
      * Initialization of socket messages
@@ -12,10 +13,28 @@ class SocketIO {
     init(server) {
         this.#io = new Server(server);
         this.#io.on('connection', (socket) => {
+            socket.on('joinRoom', ({ username, room }) => {
+                const user = this.#userJoin(socket.id, username, room);
+
+                socket.join(user.room);
+            })
+
             socket.on('chat message', (msg) => {
-                this.#chatBox(msg);
+                this.#chatBox(socket, msg);
             });
         });
+    }
+
+    #userJoin(id, username, room) {
+        const user = { id, username, room };
+
+        this.#users.push(user);
+
+        return user;
+    }
+
+    #getCurrentUser(id) {
+        return this.#users.find(user => user.id === id);
     }
 
     /**
@@ -23,7 +42,7 @@ class SocketIO {
      * @param {object} msg Data of message
      * @returns {message}
      */
-    #chatBox(msg) {
+    #chatBox(socket, msg) {
         let sql = `
             INSERT INTO chat SET ?
         `;
@@ -47,7 +66,9 @@ class SocketIO {
                 console.error(error);
             }
 
-            return this.#io.emit('chat message', {
+            const user = this.#getCurrentUser(socket.id);
+
+            return this.#io.to(user.room).emit('chat message', {
                 date: newDate,
                 time: newTime,
                 username: msg.username,

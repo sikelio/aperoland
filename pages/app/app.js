@@ -126,6 +126,8 @@ class App {
             }
         });
 
+        socket.emit('joinRoom', { username: username, idEvent: idEvent });
+
         socket.on('chat message', function(msg) {
             var item = document.createElement('li');
             item.textContent = `le ${msg.date} à ${msg.time} : ${msg.username} : ${msg.msg}`;
