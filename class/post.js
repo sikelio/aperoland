@@ -9,11 +9,9 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
 
-const Calendar = require('./calendar');
-const Mail = require('./mail');
-const mail = new Mail;
+const Utiles = require('./utiles');
 
-class Post extends Calendar {
+class Post extends Utiles {
     /**
      * Init of all post routes
      * @param {function} app ExpressJS functions
@@ -83,7 +81,7 @@ class Post extends Calendar {
                             return res.redirect('/internal-error');
                         }
 
-                        mail.sendMailConfirmation(email, username, confirmationToken);
+                        this.sendMail('confirmationMail', email, username, confirmationToken);
 
                         return res.render('register', {
                             success: 'Utilisateur crée ! Confirmez votre compte en cliquant sur le lien reçu par mail.',
@@ -219,7 +217,7 @@ class Post extends Calendar {
                         return res.redirect('/internal-error');
                     }
 
-                    mail.sendNewCode(email, username, newCode);
+                    this.sendMail('newCode', email, username, newCode);
 
                     return res.render('confirmation', {
                         info: 'Si l\'adresse mail existe vous recevrez un mail',
@@ -274,7 +272,7 @@ class Post extends Calendar {
                             return res.redirect('/internal-error');
                         }
 
-                        this.createFile(values, date, time, newValues.idEvent);
+                        this.createCalendarFile(values, date, time, newValues.idEvent);
 
                         return res.redirect('/app/home');
                     });
@@ -420,7 +418,7 @@ class Post extends Calendar {
                         return res.redirect('/internal-error');
                     }
 
-                    this.recreateFile(results[0]);
+                    this.recreateCalendarFile(results[0]);
 
                     return res.redirect(`/app/event/${req.params.idEvent}`)
                 });
@@ -431,11 +429,11 @@ class Post extends Calendar {
         app.post('/app/account/change-info', accountController.isConnected, async (req, res) => {
             const { email, username } = req.body;
 
-            if (this.#checkStringNotNull(username) == false) {
+            if (this.checkStringNotNull(username) == false) {
                 return res.redirect('/app/account');
             }
 
-            if (this.#checkEmail(email) == false) {
+            if (this.checkEmail(email) == false) {
                 return res.redirect('/app/account');
             }
 
@@ -468,7 +466,7 @@ class Post extends Calendar {
 
                         if (checkResult.length > 0) {
                             return res.render('account', {
-                                navbar: this.#getNavbar(decoded.role),
+                                navbar: this.getNavbar(decoded.role),
                                 'error-account-info': 'Cet email est déja utilisé',
                                 userData: {
                                     username: results[0].username,
@@ -503,7 +501,7 @@ class Post extends Calendar {
                                 return res.redirect('/internal-error');
                             }
 
-                            mail.sendAccountInfoHasChanged(userInfo.email, userInfo.username, userInfo);
+                            this.sendMail('accountInfoChanged', userInfo.email, userInfo.username, userInfo);
 
                             return res.redirect('/app/account');
                         });
@@ -574,7 +572,7 @@ class Post extends Calendar {
                                     return res.redirect('/internal-error');
                                 }
 
-                                mail.sendPasswordWasReset(mailInfo.to, mailInfo.username, mailInfo);
+                                this.send('passwordChanged', mailInfo.to, mailInfo.username, mailInfo);
 
                                 return res.redirect('/app/account');
                             });
@@ -690,7 +688,7 @@ class Post extends Calendar {
                     return res.redirect('/internal-error');
                 }
 
-                mail.sendInvite(formatEmail, results[0].organizer, results[0].uuid);
+                this.sendMail('sendInvites', formatEmail, results[0].organizer, results[0].uuid);
 
                 return res.redirect(`/app/event/${req.params.idEvent}`);
             });
@@ -769,50 +767,6 @@ class Post extends Calendar {
                 return res.redirect('/admin/events');
             });
         });
-    }
-
-    /**
-     * Get the navbar following the user role
-     * @param {string} role User role
-     * @returns {element}
-     */
-    #getNavbar(role) {
-        let navbar;
-
-        switch (role) {
-            case 'User':
-                navbar = components.appNavbar
-                break;
-            case 'Admin':
-                navbar = components.adminNavbar;
-                break;
-        }
-
-        return navbar;
-    }
-
-    /**
-     * Check if string is not empty
-     * @param {string} string String value
-     * @returns {boolean}
-     */
-    #checkStringNotNull(string) {
-        if (string) {
-            return true;
-        }
-        
-        return false;
-    }
-
-    /**
-     * Check if string is an email
-     * @param {string} email Email string
-     * @returns {boolean}
-     */
-    #checkEmail(email) {
-        var regEx = /\S+@\S+\.\S+/;
-
-        return regEx.test(email);
     }
 }
 

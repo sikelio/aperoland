@@ -11,9 +11,9 @@ const jwt = require('jsonwebtoken');
 const path = require('path');
 const { promisify } = require('util');
 
-const Calendar = require('./calendar');
+const Utiles = require('./utiles');
 
-class Routes extends Calendar {
+class Routes extends Utiles {
     /**
      * Init of all types of routes
      * @param {function} app ExpressJS functions
@@ -178,7 +178,7 @@ class Routes extends Calendar {
                             }
 
                             return res.render('app', {
-                                navbar: this.#getNavbar(decoded.role),
+                                navbar: this.getNavbar(decoded.role),
                                 addEvent: components.addEvent,
                                 joinEvent: components.joinEvent,
                                 eventsList: results
@@ -261,7 +261,7 @@ class Routes extends Calendar {
                                     }
 
                                     return res.render('event', {
-                                        navbar: this.#getNavbar(decoded.role),
+                                        navbar: this.getNavbar(decoded.role),
                                         eventName: eventInfo.name,
                                         organizer: eventInfo.username,
                                         description: eventInfo.description,
@@ -308,9 +308,7 @@ class Routes extends Calendar {
 
                 let eventName = results[0].name.replace(/\s/g, '-').toLowerCase();
 
-                if (fs.existsSync(`calendar/${results[0].idEvent}-${eventName}.ics`) == false) {
-                    this.recreateFile(results[0]);
-                }
+                this.checkCalendarFile(results[0], eventName);
 
                 return res.sendFile(path.join(__dirname, `../calendar/${results[0].idEvent}-${eventName}.ics`));
             });
@@ -334,7 +332,7 @@ class Routes extends Calendar {
                     }
 
                     return res.render('account', {
-                        navbar: this.#getNavbar(decoded.role),
+                        navbar: this.getNavbar(decoded.role),
                         userData: results[0]
                     });
                 });
@@ -405,26 +403,6 @@ class Routes extends Calendar {
                 });
             });
         });
-    }
-
-    /**
-     * Get the navbar following the user role
-     * @param {string} role User role
-     * @returns {element}
-     */
-    #getNavbar(role) {
-        let navbar;
-
-        switch (role) {
-            case 'User':
-                navbar = components.appNavbar
-                break;
-            case 'Admin':
-                navbar = components.adminNavbar;
-                break;
-        }
-
-        return navbar;
     }
 }
 

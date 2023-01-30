@@ -12,8 +12,8 @@ class API {
     /**
      * Creation of the geocode get routes
      * When the client side js makes a resquest to this URL,
-     * the server side js makes a request to the french governement
-     * geocode public api
+     * the server side js makes a request to the TomTom
+     * geocode api
      * @param {function} app ExpressJS functions
      * @returns {array}
      */
