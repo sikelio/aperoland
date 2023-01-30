@@ -137,7 +137,17 @@ class EventManager {
         new TomSelect('#input-tags', {
             persist: false,
             createOnBlur: true,
-            create: true
+            create: true,
+            render: {
+                no_results: function() {
+                    return;
+                },
+                option_create: function(data, escape) {
+                    return `
+                        <div class="create">Ajouter <strong>${escape(data.input)}</strong>&hellip;</div>
+                    `;
+                }
+            }
         });
     }
 }

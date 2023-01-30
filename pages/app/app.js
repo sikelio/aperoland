@@ -54,6 +54,9 @@ class App {
                             </div>
                         </div>
                     `;
+                },
+                no_results: function() {
+                    return `<div class="no-results">Pas d'adresse trouvée</div>`;
                 }
             },
         });

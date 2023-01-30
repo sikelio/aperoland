@@ -1,4 +1,5 @@
 const fs = require('fs');
+const components = require('./components');
 
 class Utiles {
     /**

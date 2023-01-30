@@ -21,7 +21,7 @@ class Calendar {
             location: info.address,
             geo: { lat: Number(info.latitude), lon: Number(info.longitude) },
             start: [Number(newDate[0]), Number(newDate[1]), Number(newDate[2]), Number(newTime[0]), Number(newTime[1])],
-            duration: { minutes: Number(info.duration) }
+            duration: { hours: Number(info.duration) }
         }, (error, value) => {
             if (error) {
                 console.error(error);
