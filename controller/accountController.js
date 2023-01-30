@@ -4,6 +4,27 @@ const { promisify } = require('util');
 const mysql = require('../config/mysql');
 
 /**
+ * Check if user is connected at root
+ * @param {object} req ExpressJS request data
+ * @param {function} res ExpressJS response functions
+ * @param {function} next Go to next middleware
+ * @returns {next}
+ */
+exports.loginCheck = async (req, res, next) => {
+    try {
+        const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
+            process.env.JWT_SECRET
+        );
+
+        if (decoded) {
+            return res.redirect('/app/home');
+        }
+    } catch (error) {
+        return next();
+    }
+};
+
+/**
  * Check if user is connected
  * @param {object} req ExpressJS request data
  * @param {function} res ExpressJS response functions

@@ -2,6 +2,7 @@ require('dotenv').config();
 const components = require('./components');
 const eventController = require('../controller/eventController');
 const accountController = require('../controller/accountController');
+const adminController = require('../controller/adminController');
 const info = require('../package.json');
 const logger = require('../config/logger');
 const mysql = require('../config/mysql');
@@ -33,35 +34,23 @@ class Routes extends Calendar {
      */
     #public(app) {
         // Root page
-        app.get('/', async (req, res) => {
-            if (req.cookies.aperolandTicket) {
-                try {
-                    const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
-                        process.env.JWT_SECRET
-                    );
-
-                    return res.redirect('/app/home');
-                } catch (error) {
-                    return res.clearCookie('aperolandTicket');
+        app.get('/', accountController.loginCheck, (req, res) => {
+            mysql.query('SELECT * FROM quotes ORDER BY RAND ( ) LIMIT 1', (error, results) => {
+                if (error) {
+                    return res.redirect('/internal-error');
                 }
-            } else {
-                mysql.query('SELECT * FROM quotes ORDER BY RAND ( ) LIMIT 1', (error, results) => {
-                    if (error) {
-                        return res.redirect('/internal-error');
-                    }
 
-                    if (results.length == 0) {
-                        return res.render('home', {
-                            navbar: components.publicNavbar
-                        });
-                    }
-
+                if (results.length == 0) {
                     return res.render('home', {
-                        navbar: components.publicNavbar,
-                        quote: results[0].quote
+                        navbar: components.publicNavbar
                     });
+                }
+
+                return res.render('home', {
+                    navbar: components.publicNavbar,
+                    quote: results[0].quote
                 });
-            }
+            });
         });
 
         // Return the favicon for all routes
@@ -70,46 +59,22 @@ class Routes extends Calendar {
         });
 
         // Register page
-        app.get('/register', async (req, res) => {
-            if (req.cookies.aperolandTicket) {
-                try {
-                    const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
-                        process.env.JWT_SECRET
-                    );
-
-                    return res.redirect('/app/home');
-                } catch (error) {
-                    return res.clearCookie('aperolandTicket');
-                }
-            } else {
-                return res.render('register', {
-                    navbar: components.publicNavbar,
-                    projectName: info.displayName,
-                    cgu: components.cgu,
-                    currentYear: new Date().getFullYear()
-                });
-            }
+        app.get('/register', accountController.loginCheck, (req, res) => {
+            return res.render('register', {
+                navbar: components.publicNavbar,
+                projectName: info.displayName,
+                cgu: components.cgu,
+                currentYear: new Date().getFullYear()
+            });
         });
 
         // Login page
-        app.get('/login', async (req, res) => {
-            if (req.cookies.aperolandTicket) {
-                try {
-                    const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
-                        process.env.JWT_SECRET
-                    );
-
-                    return res.redirect('/app/home');
-                } catch (error) {
-                    return res.clearCookie('aperolandTicket');
-                }
-            } else {
-                return res.render('login', {
-                    navbar: components.publicNavbar,
-                    projectName: info.displayName,
-                    currentYear: new Date().getFullYear()
-                });
-            }
+        app.get('/login', accountController.loginCheck, (req, res) => {
+            return res.render('login', {
+                navbar: components.publicNavbar,
+                projectName: info.displayName,
+                currentYear: new Date().getFullYear()
+            });
         });
 
         // Logout code
