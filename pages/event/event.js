@@ -93,6 +93,7 @@ class EventManager {
     /**
      * Leave function confirmation
      * @param {number} idEvent ID of the event
+     * @returns {void}
      */
     leaveEventButton(idEvent) {
         const leaveButton = document.getElementsByClassName('btn-leave');
@@ -107,6 +108,11 @@ class EventManager {
         }
     }
 
+    /**
+     * Init of the deletion button of an event
+     * @param {number} idEvent ID of the event
+     * @returns {void}
+     */
     deleteEventButton(idEvent) {
         const deleteButton = document.getElementsByClassName('btn-delete-event');
         const deleteEvent = document.getElementById('deleteEvent');
@@ -120,6 +126,11 @@ class EventManager {
         }
     }
 
+    /**
+     * Init of the add to shopping list button of an event
+     * @param {number} idEvent ID of the event
+     * @returns {void}
+     */
     addShoppingListItemButton(idEvent) {
         const addArticleButton = document.getElementsByClassName('btn-add-article');
         const addArticle = document.getElementById('addArticle');
@@ -133,6 +144,11 @@ class EventManager {
         }
     }
 
+    /**
+     * Init of the input for inviting multiple
+     * people
+     * @returns {void}
+     */
     invitePeople() {
         new TomSelect('#input-tags', {
             persist: false,

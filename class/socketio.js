@@ -25,6 +25,13 @@ class SocketIO {
         });
     }
 
+    /**
+     * Method to add users to chat room
+     * @param {number} id User ID
+     * @param {string} username Username
+     * @param {number} room Romm ID
+     * @returns {object}
+     */
     #userJoin(id, username, room) {
         const user = { id, username, room };
 
@@ -33,6 +40,11 @@ class SocketIO {
         return user;
     }
 
+    /**
+     * Method to get user room ID
+     * @param {number} id User ID
+     * @returns {number}
+     */
     #getCurrentUser(id) {
         return this.#users.find(user => user.id === id);
     }

@@ -59,6 +59,10 @@ class EventsAdmin {
         }).addTo(map);
     }
 
+    /**
+     * Init of the delete buttons for events
+     * @returns {void}
+     */
     deleteEvent() {
         const deleteButtons = document.getElementsByClassName('btn-delete-event');
         const confirmDeleteEvent = document.getElementById('confirmDeleteEvent');

@@ -29,6 +29,7 @@ class Post extends Utiles {
      * @returns {void} Page
      */
     #public(app) {
+        // Post route for register
         app.post('/register', (req, res) => {
             const { username, email, password, passwordConfirm, cgu } = req.body;
 
@@ -94,6 +95,7 @@ class Post extends Utiles {
             });
         });
 
+        // Post route for login
         app.post('/login', async (req, res) => {
             try {
                 const { email, password } = req.body;
@@ -176,12 +178,14 @@ class Post extends Utiles {
             }
         });
 
+        // Post route for logout
         app.post('/logout', (req, res) => {
             res.clearCookie('aperolandTicket');
 
             return res.redirect('/');
         });
 
+        // Post route for reset confirmation code
         app.post('/confirm/reset-code', (req, res) => {
             const { email } = req.body;
 
@@ -701,6 +705,7 @@ class Post extends Utiles {
      * @returns {void} Page
      */
     #admin(app) {
+        // Post route for adding a quote
         app.post('/admin/quotes/add-quote', adminController.isAdmin, async (req, res) => {
             const { name, quote } = req.body
 
@@ -718,6 +723,7 @@ class Post extends Utiles {
             });
         });
 
+        // Post route for deleting an user
         app.post('/admin/users/delete-user', adminController.isAdmin, async (req, res) => {
             const { idUser } = req.body;
 
@@ -734,6 +740,7 @@ class Post extends Utiles {
             });
         });
 
+        // Post route for getting all events data
         app.post('/admin/events/get-events', adminController.isAdmin, (req, res) => {
             let sql = `
                 SELECT E.idEvent, E.idUser, E.name, U.email, COUNT(EP.idUser) AS attendees, E.address,
@@ -753,6 +760,7 @@ class Post extends Utiles {
             });
         });
 
+        // Post route for deleting an event
         app.post('/admin/events/:idEvent/delete-event', adminController.isAdmin, (req, res) => {
             let sql = `
                 DELETE FROM events

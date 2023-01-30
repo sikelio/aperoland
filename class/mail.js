@@ -194,9 +194,14 @@ class Mail {
         });
     }
 
+    /**
+     * 
+     * @param {array} emails Array of recipents
+     * @param {string} organizer Organizer name
+     * @param {string} eventCode Event code
+     * @returns {void}
+     */
     sendInvite(emails, organizer, eventCode) {
-        console.error(typeof to);
-
         const options = {
             viewEngine: {
                 extname: '.hbs',

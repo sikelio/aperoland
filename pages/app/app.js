@@ -105,6 +105,11 @@ class App {
         }
     }
 
+    /**
+     * Initialization of the chat box
+     * @param {string} username Username
+     * @param {number} idEvent ID of the event
+     */
     initChat(username, idEvent) {
         const socket = io();
 

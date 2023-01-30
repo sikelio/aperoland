@@ -5,6 +5,7 @@ class Users {
 
     /**
      * Create interaction of deletation of users
+     * @returns {void}
      */
     #deleteButtons() {
         const deleteButtons = document.getElementsByClassName('btn-delete');
