@@ -4,19 +4,20 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/libs/bootstrap@5.2.3/bootstrap.min.css">
+    <link rel="stylesheet" href="/libs/bootstrap@5.3.0-alpha1/bootstrap.css">
     <link rel="stylesheet" href="/libs/bootstrap-icons@1.10.2/bootstrap-icons.css">
-    <link rel="stylesheet" href="/libs/tom-select@2.2.2/tom-select.css">
+    <link rel="stylesheet" href="/libs/tom-select@2.2.2/tom-select.bootstrap5.css">
     <link rel="stylesheet" href="/pages/app/app.css">
-    <title>Aperoland - Profile</title>
+    <title>Aperoland - App</title>
 </head>
-<body>
+<body data-bs-theme="auto">
+    {{{svg}}}
     {{{navbar}}}
 
     <main class="flex-shrink-0">
         <div class="container control">
-            <div class="btn-group" role="group" aria-label="Basic example">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEvent">Créer un apéro</button>
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addEvent">Créer un apéro</button>
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#joinEvent">Rejoindre un apéro</button>
             </div>
         </div>
@@ -31,7 +32,7 @@
                                     <h5 class="card-title">{{name}}</h5>
                                     <h6 class="card-subtitle mb-2 text-muted">{{username}}</h6>
                                     <p class="card-text">{{description}}</p>
-                                    <a href="/app/event/{{uuid}}" class="card-link">Participants</a>
+                                    <a href="/app/event/{{idEvent}}" class="card-link">Participants</a>
                                 </div>
                             </div>
                         </div>
@@ -48,13 +49,15 @@
     {{{addEvent}}}
     {{{joinEvent}}}
 
-    <script src="/libs/bootstrap@5.2.3/bootstrap.bundle.min.js"></script>
+    <script src="/libs/bootstrap@5.3.0-alpha1/bootstrap.bundle.js"></script>
+    <script src="/libs/bootstrap@5.3.0-alpha1/form-validity.js"></script>
+    <script src="/libs/bootstrap@5.3.0-alpha1/color-mode.js"></script>
     <script src="/libs/tom-select@2.2.2/tom-select.complete.min.js"></script>
     <script src="/libs/axios/axios.min.js"></script>
     <script src="/pages/app/app.js"></script>
     <script>
         const app = new App;
-        app.init('#address');
+        app.modalsSelect('#address');
     </script>
 </body>
 </html>

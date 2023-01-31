@@ -2,10 +2,81 @@ main > .container {
     padding: 75px 15px 0;
 }
 
-.icon{
-	width: 3rem;
+#map {
+	height: 500px;
 }
 
-.item{
-	width: 100%;
+input#item {
+    border-top-right-radius: unset !important;
+    border-bottom-right-radius: unset !important;
+}
+
+input#quantitie {
+    border-radius: unset !important;
+}
+
+select#unit {
+    border-top-left-radius: unset !important;
+    border-bottom-left-radius: unset !important;
+}
+
+#form {
+    background: rgba(0, 0, 0, 0.15);
+    padding: 0.25rem;
+    display: flex;
+    height: 3rem;
+    box-sizing:border-box;
+    backdrop-filter:
+    blur(10px);
+}
+
+#input {
+    border: none;
+    padding: 0 1rem;
+    flex-grow: 1;
+    border-radius: 2rem;
+    margin: 0.25rem;
+}
+
+#input:focus {
+    outline: none;
+}
+
+#form>button {
+    background: #333;
+    border: none;
+    padding: 0 1rem;
+    margin: 0.25rem;
+    border-radius: 3px;
+    outline: none;
+    color: #fff;
+}
+
+#messages {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    height: 500px;
+    overflow-y: scroll;
+}
+
+#messages>li {
+    padding: 0.5rem 1rem;
+}
+
+#messages>li:nth-child(odd) {
+    background: #efefef;
+}
+
+#dark-mode-selector button {
+    height: 38px;
+}
+
+[data-bs-theme=dark] #messages>li:nth-child(odd) {
+    background: #212529 !important;
+}
+
+[data-bs-theme=dark] #input {
+    color: var(--bs-secondary-color);
+    background-color: var(--bs-form-control-bg);
 }

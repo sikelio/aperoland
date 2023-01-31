@@ -1,14 +1,17 @@
 <div class="modal fade" id="joinEvent" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form action="/home/app/join-event" method="post">
+            <form action="/app/home/join-event" class="needs-validation" method="post" novalidate>
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Ajouter un apéro</h1>
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Rejoindre un apéro</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
                         <input type="text" class="form-control" id="uuid" placeholder="Code de l'apéro" name="uuid" required>
+                        <div class="invalid-feedback">
+                            Veuillez renseigner un code
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">

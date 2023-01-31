@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/libs/bootstrap@5.3.0-alpha1/bootstrap.css">
+    <link rel="stylesheet" href="/libs/bootstrap-icons@1.10.2/bootstrap-icons.css">
+    <link rel="stylesheet" href="/pages/quotes/quotes.css">
+    <title>Aperoland - Quotes</title>
+</head>
+<body data-bs-theme="auto">
+    {{{svg}}}
+    {{{navbar}}}
+
+    <main class="flex-shrink-0">
+        <div class="container control">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addQuote">Ajouter une citation</button>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12 table-responsive">
+                <table class="table mt-5">
+                    <thead>
+                        <th scope="col">Nom</th>
+                        <th scope="col">Citation</th>
+                    </thead>
+                    <tbody>
+                        {{#if quotes}}
+                            {{#each quotes}}
+                                <tr>
+                                    <td>{{name}}</td>
+                                    <td>{{quote}}</td>
+                                </tr>
+                            {{/each}}
+                        {{else}}
+                            <tr>
+                                <td colspan="5">Aucune citation</td>
+                            </tr>
+                        {{/if}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    {{{addQuote}}}
+
+    <script src="/libs/bootstrap@5.3.0-alpha1/bootstrap.bundle.js"></script>
+    <script src="/libs/bootstrap@5.3.0-alpha1/color-mode.js"></script>
+</body>
+</html>

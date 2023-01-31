@@ -1,0 +1,7 @@
+main > .container {
+    padding: 75px 15px 0;
+}
+
+#dark-mode-selector button {
+    height: 38px;
+}

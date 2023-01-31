@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/libs/bootstrap@5.3.0-alpha1/bootstrap.css">
+    <link rel="stylesheet" href="/libs/bootstrap-icons@1.10.2/bootstrap-icons.css">
+    <link rel="stylesheet" href="/libs/leaflet@1.9.3/leaflet.css">
+    <link rel="stylesheet" href="/libs/leaflet.markercluster@1.5.3/marker-cluster.css">
+    <link rel="stylesheet" href="/libs/leaflet.markercluster@1.5.3/marker-cluster.default.css">
+    <link rel="stylesheet" href="/pages/events/events.css">
+    <title>Aperoland - Events</title>
+</head>
+<body data-bs-theme="auto">
+    {{{svg}}}
+    {{{navbar}}}
+
+    <main class="flex-shrink-0">
+        <div class="container">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12 table-responsive">
+                <table class="table mt-5">
+                    <thead>
+                        <th scope="col">#</th>
+                        <th scope="col">Nom</th>
+                        <th scope="col">Organisateur</th>
+                        <th scope="col">Nombre de participants</th>
+                        <th scope="col">Adresse</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Heure</th>
+                        <th scope="col">Durée</th>
+                    </thead>
+                    <tbody>
+                        {{#if events}}
+                            {{#each events}}
+                                <tr>
+                                    <td>
+                                        <button type="button" class="btn btn-danger btn-delete-event" data-event="{{idEvent}}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </td>
+                                    <td>{{name}}</td>
+                                    <td>{{email}}</td>
+                                    <td>{{attendees}}</td>
+                                    <td>{{address}}</td>
+                                    <td>{{date}}</td>
+                                    <td>{{time}}</td>
+                                    <td>{{duration}} minutes</td>
+                                </tr>
+                            {{/each}}
+                        {{else}}
+                            <tr>
+                                <td colspan="8" class="text-center">Aucun evènement</td>
+                            </tr>
+                        {{/if}}
+                    </tbody>
+                </table>
+            </div>
+            <div class="mb-3" id="map"></div>
+        </div>
+    </main>
+
+    {{{confirmDeleteEvent}}}
+
+    <script src="/libs/bootstrap@5.3.0-alpha1/bootstrap.bundle.js"></script>
+    <script src="/libs/bootstrap@5.3.0-alpha1/color-mode.js"></script>
+    <script src="/libs/leaflet@1.9.3/leaflet.js"></script>
+    <script src="/libs/leaflet.markercluster@1.5.3/leaflet.markercluster.js"></script>
+    <script src="/libs/axios/axios.min.js"></script>
+    <script src="/pages/events/events.js"></script>
+    <script>
+        const eventsAdmin = new EventsAdmin;
+        eventsAdmin.eventsList();
+        eventsAdmin.deleteEvent();
+    </script>
+</body>
+</html>

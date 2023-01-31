@@ -1,0 +1,60 @@
+<header>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/app/home">Aperoland</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+                aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">Application</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/app/home">Apéros</a></li>
+                            <li><a class="dropdown-item" href="/app/account">Compte</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">Admin</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/admin/events">Apéros</a></li>
+                            <li><a class="dropdown-item" href="/admin/quotes">Citations</a></li>
+                            <li><a class="dropdown-item" href="/admin/users">Utilisateurs</a></li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav mb-2 mb-md-0">
+                    <li class="nav-item">
+                        <ul class="list-unstyled btn-group d-flex" id="dark-mode-selector" style="--bs-dropdown-min-width: 8rem;">
+                            <li>
+                                <button type="button" class="btn btn-outline-secondary me-2 d-flex align-items-center" data-bs-theme-value="light">
+                                    <svg class="bi opacity-50 theme-icon" width="16" heigth="16" fill="currentColor"><use href="#sun-fill"></use></svg>
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" class="btn btn-outline-secondary me-2 d-flex align-items-center" data-bs-theme-value="dark">
+                                    <svg class="bi opacity-50 theme-icon" width="16" heigth="16" fill="currentColor"><use href="#moon-stars-fill"></use></svg>
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" class="btn btn-outline-secondary me-2 d-flex align-items-center active" data-bs-theme-value="auto">
+                                    <svg class="bi opacity-50 theme-icon" width="16" heigth="16" fill="currentColor"><use href="#circle-half"></use></svg>
+                                </button>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <form action="/logout" method="post">
+                    <div class="btn-group d-flex">
+                        <button type="submit" class="btn btn-outline-success">
+                            <i class="bi bi-power"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </nav>
+</header>

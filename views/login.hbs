@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/libs/bootstrap@5.2.3/bootstrap.min.css">
+    <link rel="stylesheet" href="/libs/bootstrap@5.3.0-alpha1/bootstrap.css">
     <link rel="stylesheet" href="/libs/bootstrap-icons@1.10.2/bootstrap-icons.css">
     <link rel="stylesheet" href="/pages/login/login.css">
     <title>Aperoland</title>
 </head>
-<body class="text-center">
+<body class="text-center" data-bs-theme="auto">
+    {{{svg}}}
     {{{navbar}}}
 
     <main class="flex-shrink-0 form-signin w-100 m-auto">
@@ -37,11 +38,12 @@
                 <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="password">
                 <label for="floatingPassword">Mot de passe</label>
             </div>
-            <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+            <button class="w-100 btn btn-lg btn-primary" type="submit">Connexion</button>
             <p class="mt-5 mb-3 text-muted">{{{projectName}}} &copy; {{{currentYear}}}</p>
         </form>
     </main>
 
-    <script src="/libs/bootstrap@5.2.3/bootstrap.bundle.min.js"></script>
+    <script src="/libs/bootstrap@5.3.0-alpha1/bootstrap.bundle.js"></script>
+    <script src="/libs/bootstrap@5.3.0-alpha1/color-mode.js"></script>
 </body>
 </html>

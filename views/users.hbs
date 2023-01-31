@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/libs/bootstrap@5.3.0-alpha1/bootstrap.css">
+    <link rel="stylesheet" href="/libs/bootstrap-icons@1.10.2/bootstrap-icons.css">
+    <link rel="stylesheet" href="/pages/users/users.css">
+    <title>Aperoland - Users</title>
+</head>
+<body data-bs-theme="auto">
+    {{{svg}}}
+    {{{navbar}}}
+
+    <main class="flex-shrink-0">
+        <div class="container">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12 table-responsive">
+                <table class="table mt-5">
+                    <thead>
+                        <th scope="col">#</th>
+                        <th scope="col">Pseudo</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">IP</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Heure</th>
+                        <th scope="col">Vérifié ?</th>
+                    </thead>
+                    <tbody>
+                        {{#if users}}
+                            {{#each users}}
+                                <tr>
+                                    <td>
+                                        <button type="button" class="btn btn-danger btn-delete" data-user="{{idUser}}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </td>
+                                    <td class="username">{{username}}</td>
+                                    <td>{{email}}</td>
+                                    <td>{{lastIp}}</td>
+                                    <td>{{lastConnectionDate}}</td>
+                                    <td>{{lastConnectionTime}}</td>
+                                    <td>
+                                        {{#ifEquals isConfirmed 'Yes'}}
+                                            Oui
+                                        {{/ifEquals}}
+                                        {{#ifEquals isConfirmed 'No'}}
+                                            Non
+                                        {{/ifEquals}}
+                                    </td>
+                                </tr>
+                            {{/each}}
+                        {{else}}
+                            <tr>
+                                <td colspan="7" class="text-center">Aucun utilisateur</td>
+                            </tr>
+                        {{/if}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    {{{confirmDeleteUser}}}
+
+    <script src="/libs/bootstrap@5.3.0-alpha1/bootstrap.bundle.js"></script>
+    <script src="/libs/bootstrap@5.3.0-alpha1/color-mode.js"></script>
+    <script src="/libs/axios/axios.min.js"></script>
+    <script src="/pages/users/users.js"></script>
+    <script>
+        const users = new Users;
+        users.init();
+    </script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<div class="modal fade" id="addArticle" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <form action="" class="needs-validation" method="post" novalidate>
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Ajouter un article</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body row g-0">
+                    <div class="mb-3 col-4">
+                        <input type="text" class="form-control" id="item" placeholder="Article" name="item" required>
+                        <div class="invalid-feedback">
+                            Veuillez renseigner un article
+                        </div>
+                    </div>
+
+                    <div class="mb-3 col-4">
+                        <input type="number" class="form-control" id="quantitie" placeholder="Quantité" name="quantitie" min="0" required>
+                        <div class="invalid-feedback">
+                            Veuillez renseigner une quantité
+                        </div>
+                    </div>
+
+                    <div class="mb-3 col-4">
+                        <select class="form-select" name="unit" id="unit" required>
+                            <option selected></option>
+                            <option value="Litre">Litre</option>
+                            <option value="Kilogramme">Kilogramme</option>
+                            <option value="Bouteille">Bouteille</option>
+                            <option value="Paquet">Paquet</option>
+                            <option value="Unité">Unité</option>
+                        </select>
+                        <div class="invalid-feedback">
+                            Veuillez renseigner une unité
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                    <input type="submit" class="btn btn-primary" value="Ajouter">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
