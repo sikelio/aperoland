@@ -42,11 +42,13 @@ class Routes extends Utiles {
 
                 if (results.length == 0) {
                     return res.render('home', {
+                        svg: components.svg,
                         navbar: components.publicNavbar
                     });
                 }
 
                 return res.render('home', {
+                    svg: components.svg,
                     navbar: components.publicNavbar,
                     quote: results[0].quote
                 });
@@ -61,6 +63,7 @@ class Routes extends Utiles {
         // Register page
         app.get('/register', accountController.loginCheck, (req, res) => {
             return res.render('register', {
+                svg: components.svg,
                 navbar: components.publicNavbar,
                 projectName: info.displayName,
                 cgu: components.cgu,
@@ -71,6 +74,7 @@ class Routes extends Utiles {
         // Login page
         app.get('/login', accountController.loginCheck, (req, res) => {
             return res.render('login', {
+                svg: components.svg,
                 navbar: components.publicNavbar,
                 projectName: info.displayName,
                 currentYear: new Date().getFullYear()
@@ -88,6 +92,7 @@ class Routes extends Utiles {
 
                 if (results.length != 1) {
                     return res.render('confirmation', {
+                        svg: components.svg,
                         alreadyConfirmed: true,
                         message: 'Erreur'
                     });
@@ -108,6 +113,7 @@ class Routes extends Utiles {
                     });
                 } catch (error) {
                     return res.render('confirmation', {
+                        svg: components.svg,
                         expired: true,
                         message: 'Erreur'
                     });
@@ -178,6 +184,7 @@ class Routes extends Utiles {
                             }
 
                             return res.render('app', {
+                                svg: components.svg,
                                 navbar: this.getNavbar(decoded.role),
                                 addEvent: components.addEvent,
                                 joinEvent: components.joinEvent,
@@ -261,6 +268,7 @@ class Routes extends Utiles {
                                     }
 
                                     return res.render('event', {
+                                        svg: components.svg,
                                         navbar: this.getNavbar(decoded.role),
                                         eventName: eventInfo.name,
                                         organizer: eventInfo.username,
@@ -332,6 +340,7 @@ class Routes extends Utiles {
                     }
 
                     return res.render('account', {
+                        svg: components.svg,
                         navbar: this.getNavbar(decoded.role),
                         userData: results[0]
                     });
@@ -358,6 +367,7 @@ class Routes extends Utiles {
                 }
 
                 return res.render('users', {
+                    svg: components.svg,
                     navbar: components.adminNavbar,
                     users: results,
                     confirmDeleteUser: components.confirmDeleteUser
@@ -373,6 +383,7 @@ class Routes extends Utiles {
                 }
 
                 return res.render('quotes', {
+                    svg: components.svg,
                     navbar: components.adminNavbar,
                     quotes: results,
                     addQuote: components.addQuote
@@ -397,6 +408,7 @@ class Routes extends Utiles {
                 }
 
                 return res.render('events', {
+                    svg: components.svg,
                     navbar: components.adminNavbar,
                     confirmDeleteEvent: components.confirmDeleteEvent,
                     events: results

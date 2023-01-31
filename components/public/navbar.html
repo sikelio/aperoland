@@ -7,22 +7,30 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
-                <ul class="navbar-nav me-auto mb-2 mb-md-0">
-                    <!-- <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/">
-                            <i class="bi bi-house"></i>
-                        </a>
-                    </li>
+                <ul class="navbar-nav me-auto mb-2 mb-md-0"></ul>
+
+                <ul class="navbar-nav mb-2 mb-md-0">
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Link</a>
+                        <ul class="list-unstyled btn-group d-flex" id="dark-mode-selector" style="--bs-dropdown-min-width: 8rem;">
+                            <li>
+                                <button type="button" class="btn btn-outline-secondary me-2 d-flex align-items-center" data-bs-theme-value="light">
+                                    <svg class="bi opacity-50 theme-icon" width="16" heigth="16" fill="currentColor"><use href="#sun-fill"></use></svg>
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" class="btn btn-outline-secondary me-2 d-flex align-items-center" data-bs-theme-value="dark">
+                                    <svg class="bi opacity-50 theme-icon" width="16" heigth="16" fill="currentColor"><use href="#moon-stars-fill"></use></svg>
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" class="btn btn-outline-secondary me-2 d-flex align-items-center active" data-bs-theme-value="auto">
+                                    <svg class="bi opacity-50 theme-icon" width="16" heigth="16" fill="currentColor"><use href="#circle-half"></use></svg>
+                                </button>
+                            </li>
+                        </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link disabled">Disabled</a>
-                    </li>
-                    <li class="nav-item d-flex">
-                        
-                    </li> -->
                 </ul>
+
                 <div class="btn-group d-flex">
                     <a href="/login" class="btn btn-outline-success">Connexion</a>
                     <a href="/register" class="btn btn-outline-info">Inscription</a>

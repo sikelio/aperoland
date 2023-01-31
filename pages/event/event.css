@@ -67,3 +67,16 @@ select#unit {
 #messages>li:nth-child(odd) {
     background: #efefef;
 }
+
+#dark-mode-selector button {
+    height: 38px;
+}
+
+[data-bs-theme=dark] #messages>li:nth-child(odd) {
+    background: #212529 !important;
+}
+
+[data-bs-theme=dark] #input {
+    color: var(--bs-secondary-color);
+    background-color: var(--bs-form-control-bg);
+}

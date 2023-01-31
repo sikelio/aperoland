@@ -35,6 +35,7 @@ class Post extends Utiles {
 
             if (cgu != 'on') {
                 return res.render('register', {
+                    svg: components.svg,
                     warning: 'Vous devez accepter les CGU',
                     navbar: components.publicNavbar,
                     projectName: info.displayName,
@@ -50,6 +51,7 @@ class Post extends Utiles {
 
                 if (results.length > 0) {
                     return res.render('register', {
+                        svg: components.svg,
                         warning: 'Ce mail est déjà utilisé',
                         navbar: components.publicNavbar,
                         projectName: info.displayName,
@@ -57,6 +59,7 @@ class Post extends Utiles {
                     });
                 } else if (password !== passwordConfirm) {
                     return res.render('register', {
+                        svg: components.svg,
                         warning: 'Les mots de passes ne correspondent pas',
                         navbar: components.publicNavbar,
                         projectName: info.displayName,
@@ -85,6 +88,7 @@ class Post extends Utiles {
                         this.sendMail('confirmationMail', email, username, confirmationToken);
 
                         return res.render('register', {
+                            svg: components.svg,
                             success: 'Utilisateur crée ! Confirmez votre compte en cliquant sur le lien reçu par mail.',
                             navbar: components.publicNavbar,
                             projectName: info.displayName,
@@ -102,6 +106,7 @@ class Post extends Utiles {
 
                 if (!email || !password) {
                     return res.render('login', {
+                        svg: components.svg,
                         warning: 'Veuillez fournir un email et un mot de passe',
                         navbar: components.publicNavbar,
                         projectName: info.displayName,
@@ -113,6 +118,7 @@ class Post extends Utiles {
                     try {
                         if (results.length == 0 || !(await bcrypt.compare(password, results[0].password))) {
                             return res.render('login', {
+                                svg: components.svg,
                                 warning: 'Adresse mail ou Mot de passe incorrect !',
                                 navbar: components.publicNavbar,
                                 projectName: info.displayName,
@@ -122,6 +128,7 @@ class Post extends Utiles {
 
                         if (results[0].isConfirmed == 'No') {
                             return res.render('login', {
+                                svg: components.svg,
                                 warning: 'Votre compte n\'est pas confirmé. Veuillez le confirmer en cliquant sur le lien que vous avez reçu par mail.',
                                 navbar: components.publicNavbar,
                                 projectName: info.displayName,
@@ -161,6 +168,7 @@ class Post extends Utiles {
                         });
                     } catch (error) {
                         return res.render('login', {
+                            svg: components.svg,
                             warning: 'Une erreur s\'est produite',
                             navbar: components.publicNavbar,
                             projectName: info.displayName,
@@ -170,6 +178,7 @@ class Post extends Utiles {
                 });
             } catch (error) {
                 return res.render('login', {
+                    svg: components.svg,
                     warning: 'Une erreur s\'est produite',
                     navbar: components.publicNavbar,
                     projectName: info.displayName,
@@ -201,6 +210,7 @@ class Post extends Utiles {
 
                 if (results.length == 0) {
                     return res.render('confirmation', {
+                        svg: components.svg,
                         info: 'Si l\'adresse mail existe vous recevrez un mail',
                         message: 'Succes'
                     });
@@ -224,6 +234,7 @@ class Post extends Utiles {
                     this.sendMail('newCode', email, username, newCode);
 
                     return res.render('confirmation', {
+                        svg: components.svg,
                         info: 'Si l\'adresse mail existe vous recevrez un mail',
                         message: 'Succes'
                     });
@@ -470,6 +481,7 @@ class Post extends Utiles {
 
                         if (checkResult.length > 0) {
                             return res.render('account', {
+                                svg: components.svg,
                                 navbar: this.getNavbar(decoded.role),
                                 'error-account-info': 'Cet email est déja utilisé',
                                 userData: {

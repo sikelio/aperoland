@@ -217,7 +217,7 @@
 
 .ts-control,
 .ts-wrapper.single.input-active .ts-control {
-  background: #fff;
+  background: transparent;
   cursor: text;
 }
 

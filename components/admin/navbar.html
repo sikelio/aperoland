@@ -23,8 +23,27 @@
                             <li><a class="dropdown-item" href="/admin/users">Utilisateurs</a></li>
                         </ul>
                     </li>
+                </ul>
+
+                <ul class="navbar-nav mb-2 mb-md-0">
                     <li class="nav-item">
-                        <span class="nav-link disabled" id="users"></span>
+                        <ul class="list-unstyled btn-group d-flex" id="dark-mode-selector" style="--bs-dropdown-min-width: 8rem;">
+                            <li>
+                                <button type="button" class="btn btn-outline-secondary me-2 d-flex align-items-center" data-bs-theme-value="light">
+                                    <svg class="bi opacity-50 theme-icon" width="16" heigth="16" fill="currentColor"><use href="#sun-fill"></use></svg>
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" class="btn btn-outline-secondary me-2 d-flex align-items-center" data-bs-theme-value="dark">
+                                    <svg class="bi opacity-50 theme-icon" width="16" heigth="16" fill="currentColor"><use href="#moon-stars-fill"></use></svg>
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" class="btn btn-outline-secondary me-2 d-flex align-items-center active" data-bs-theme-value="auto">
+                                    <svg class="bi opacity-50 theme-icon" width="16" heigth="16" fill="currentColor"><use href="#circle-half"></use></svg>
+                                </button>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
 

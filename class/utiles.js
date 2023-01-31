@@ -87,7 +87,7 @@ class Utiles {
         const Calendar = require('./calendar');
         const calendar = new Calendar;
 
-        if (fs.existsSync(`calendar/${data[0].idEvent}-${eventName}.ics`) == false) {
+        if (fs.existsSync(`calendar/${data.idEvent}-${eventName}.ics`) == false) {
             calendar.recreateFile(data[0]);
         }
     }

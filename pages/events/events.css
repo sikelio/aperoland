@@ -5,3 +5,7 @@ main > .container {
 #map {
 	height: 500px;
 }
+
+#dark-mode-selector button {
+    height: 38px;
+}

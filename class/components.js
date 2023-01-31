@@ -24,3 +24,6 @@ exports.addArticle = fs.readFileSync(path.join(__dirname, '../components/app/mod
 exports.forbidden = path.join(__dirname, '../components/errors/403.html');
 exports.notFound = path.join(__dirname, '../components/errors/404.html');
 exports.internalError = path.join(__dirname, '../components/errors/500.html');
+
+// Exports others
+exports.svg = fs.readFileSync(path.join(__dirname, '../components/public/svg.html'));
