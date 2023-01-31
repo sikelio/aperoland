@@ -131,7 +131,7 @@ class App {
             }
         });
 
-        socket.emit('joinRoom', { username: username, idEvent: idEvent });
+        socket.emit('joinRoom', { username: username, room: idEvent });
 
         socket.on('chat message', function(msg) {
             var item = document.createElement('li');
