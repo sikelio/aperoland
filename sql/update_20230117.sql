@@ -9,7 +9,7 @@ CREATE TABLE `chat` (
   FOREIGN KEY (`username`) REFERENCES `users` (`idUser`) ON DELETE CASCADE
 ) ENGINE='InnoDB' COLLATE 'utf8mb4_general_ci';
 
-ALTER TABLE `chat` DROP FOREIGN KEY `chat_ibfk_2`
+ALTER TABLE `chat` DROP FOREIGN KEY `chat_ibfk_2`;
 
 ALTER TABLE `chat` CHANGE `username` `username` varchar(30) COLLATE 'utf8mb4_general_ci' NOT NULL AFTER `time`;
 

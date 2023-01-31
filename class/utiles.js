@@ -1,6 +1,9 @@
 const fs = require('fs');
 const components = require('./components');
 
+const Mail = require('./mail');
+const mail = new Mail;
+
 class Utiles {
     /**
      * Get the navbar following the user role
@@ -55,9 +58,6 @@ class Utiles {
      * @returns {void}
      */
     sendMail(type, to, username, data) {
-        const Mail = require('./mail');
-        const mail = new Mail;
-
         switch (type) {
             case 'confirmationMail':
                 mail.sendMailConfirmation(to, username, data);

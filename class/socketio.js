@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { Server } = require('socket.io');
 const mysql = require('../config/mysql');
 
@@ -11,7 +12,13 @@ class SocketIO {
      * @returns {void}
      */
     init(server) {
-        this.#io = new Server(server);
+        this.#io = new Server(server, {
+            cors: {
+                origin: process.env.URL,
+                methods: ["GET", "POST"],
+                transports: ['websocket', 'polling'],
+            }
+        });
         this.#io.on('connection', (socket) => {
             socket.on('joinRoom', ({ username, room }) => {
                 const user = this.#userJoin(socket.id, username, room);
