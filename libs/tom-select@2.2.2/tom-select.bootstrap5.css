@@ -208,7 +208,7 @@
 .ts-dropdown,
 .ts-control,
 .ts-control input {
-  color: #343a40;
+  color: var(--bs-secondary-color);
   font-family: inherit;
   font-size: inherit;
   line-height: 1.5;
@@ -606,12 +606,26 @@
 .input-group > .ts-wrapper {
   flex-grow: 1;
 }
+
 .input-group > .ts-wrapper:not(:nth-child(2)) > .ts-control {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
+
 .input-group > .ts-wrapper:not(:last-child) > .ts-control {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
+
+[data-bs-theme=dark] .ts-dropdown,
+[data-bs-theme=dark] .ts-dropdown.form-control,
+[data-bs-theme=dark] .ts-dropdown.form-select {
+  background-color: var(--bs-body-bg);
+}
+
+[data-bs-theme=dark] .ts-dropdown .active {
+  color: var(--bs-secondary-color);
+  background-color: #1e2125;
+}
+
 /*# sourceMappingURL=tom-select.bootstrap5.css.map */
