@@ -15,16 +15,5 @@ passport.use(new SpotifyStrategy({
     clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
     callbackURL: `${process.env.URL}/auth/spotify/callback`
 }, (accessToken, refreshToken, profile, done) => {
-    let sql = `
-        UPDATE users SET spotifyAccessToken = ?
-        WHERE idUser = 1
-    `;
-
-    mysql.query(sql, [accessToken], (error, results) => {
-        if (error) {
-            console.error(error);
-        }
-
-        return done(null, profile);
-    });
+    return done(null, accessToken);
 }));

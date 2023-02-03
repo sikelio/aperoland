@@ -12,6 +12,7 @@ class API {
     /**
      * Creation of the api routes
      * @param {function} app ExpressJS functions
+     * @returns {void}
      */
     init(app) {
         this.#geocodeApi(app);
@@ -20,14 +21,15 @@ class API {
     }
 
     /**
-     * Creation of the geocode get routes
+     * Creation of the geocode API route
      * When the client side js makes a resquest to this URL,
      * the server side js makes a request to the TomTom
-     * geocode api
+     * geocode API
      * @param {function} app ExpressJS functions
      * @returns {array}
      */
     #geocodeApi(app) {
+        // API route for searching address with TomTom API
         app.get('/api/geocode', apiController.allowApiAccess, async (req, res) => {
             let queryString = req.query.q;
             let url = `https://api.tomtom.com/search/2/geocode/${encodeURIComponent(queryString)}.json?key=${process.env.TOMTOM_API_KEY}`;
@@ -53,7 +55,16 @@ class API {
         });
     }
 
+    /**
+     * Creation of the music searcging API route
+     * When the client side js makes a resquest to this URL,
+     * the server side js makes a request to the Spotify
+     * API
+     * @param {function} app ExpressJS functions
+     * @returns {void}
+     */
     #spotifyApi(app) {
+        // API route for searching song with Spotify API
         app.get('/api/search-song', async (req, res) => {
             try {
                 const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
@@ -88,17 +99,44 @@ class API {
         });
     }
 
+    /**
+     * Creation route for Spotify OAuth
+     * @param {function} app ExpressJS functions
+     * @returns {void}
+     */
     #spotityAuth(app) {
+        // Error callback route for Spotify OAuth
         app.get('/auth/error', (req, res) => {
             return res.send('/internal-error');
         });
 
+        // Route for Spotify OAuth
         app.get('/auth/spotify', passport.authenticate('spotify'));
 
+        // Callback route for Spotify OAuth
         app.get('/auth/spotify/callback', passport.authenticate('spotify', {
             failureRedirect: '/auth/error',
-        }), (req, res) => {
-            res.redirect('/');
+        }), async (req, res) => {
+            try {
+                const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
+                    process.env.JWT_SECRET
+                );
+                
+                let sql = `
+                    UPDATE users SET spotifyAccessToken = ?
+                    WHERE idUser = ?
+                `;
+
+                mysql.query(sql, [req.user, decoded.idUser], (error, results) => {
+                    if (error) {
+                        return res.redirect('/internal-error');
+                    }
+
+                    return res.redirect('/');
+                });
+            } catch (error) {
+                return res.redirect('/');
+            }
         });
     }
 }
