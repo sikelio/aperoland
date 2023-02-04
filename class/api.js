@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
 const passport = require('passport');
 const apiController = require('../controller/apiController');
+const eventController = require('../controller/eventController');
 const mysql = require('../config/mysql');
 const spotify = require('../config/spotify');
 require('../config/passport');
@@ -65,7 +66,51 @@ class API {
      */
     #spotifyApi(app) {
         // API route for searching song with Spotify API
-        app.get('/api/search-song', async (req, res) => {
+        app.get('/api/search-songs', async (req, res) => {
+            let queryString = req.query.q;
+
+            try {
+                const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
+                    process.env.JWT_SECRET
+                );
+
+                let sql = `
+                    SELECT spotifyAccessToken FROM users
+                    WHERE idUser = ?
+                `;
+
+                mysql.query(sql, decoded.idUser, (error, results) => {
+                    if (error) {
+                        return res.redirect('/internal-error');
+                    }
+
+                    spotify.setAccessToken(results[0].spotifyAccessToken);
+                    spotify.searchTracks(queryString).then((data) => {
+                        let dataObject = data.body.tracks.items
+
+                        dataObject.forEach((element) => {
+                            let artists = [];
+
+                            element.artists.forEach((element) => {
+                                artists.push(element.name);
+                            });
+
+                            element.artists = artists.join(', ');
+                        });
+
+                        return res.send(dataObject);
+                    }, (err) => {
+                        return res.sendStatus(err.statusCode);
+                    });
+                });
+            } catch (error) {
+                return res.redirect('/');
+            }
+        });
+
+        app.post('/api/event/:idEvent/create-playlist', eventController.isOrganizer, async (req, res) => {
+            const { playlistName } = req.body;
+
             try {
                 const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
                     process.env.JWT_SECRET
@@ -82,16 +127,71 @@ class API {
                     }
 
                     if (results.length == 0) {
-                        // TODO
+                        return res.redirect(`/app/event/${req.params.idEvent}#playlist`);
                     }
 
                     spotify.setAccessToken(results[0].spotifyAccessToken);
-                    spotify.getArtistAlbums('43ZHCT0cAZBISjO8DG9PnE').then((data) => {
-                            console.log(data.body);
-                        }, (err) => {
-                            console.error(err);
+                    spotify.createPlaylist(playlistName, {
+                        description: `Test aperoland`,
+                        public: true
+                    }).then((data) => {
+                        sql = `
+                            INSERT INTO playlist SET ?
+                        `;
+
+                        mysql.query(sql, { idEvent: req.params.idEvent, playlistName: playlistName, id: data.body.id }, (error, results) => {
+                            if (error) {
+                                return res.redirect('/internal-error');
+                            }
+
+                            return res.redirect(`/app/event/${req.params.idEvent}#playlist`);
+                        });
+                    }, (err) => {
+                        // TODO
+                    });
+                });
+            } catch (error) {
+                return res.redirect('/');
+            }
+        });
+
+        app.post('/api/event/:idEvent/add-song-to-playlist', async (req, res) => {
+            const { songs } = req.body;
+            const formatSongs = songs.split(',');
+
+            try {
+                const decoded = await promisify(jwt.verify)(req.cookies.aperolandTicket,
+                    process.env.JWT_SECRET
+                );
+
+                let sql = `
+                    SELECT spotifyAccessToken FROM users
+                    WHERE idUser = ?
+                `;
+                
+                mysql.query(sql, decoded.idUser, (error, results) => {
+                    if (error) {
+                        return res.redirect('/internal-error');
+                    }
+
+                    spotify.setAccessToken(results[0].spotifyAccessToken);
+                    
+                    sql = `
+                        SELECT id FROM playlist
+                        WHERE idEvent = ?
+                    `;
+
+                    mysql.query(sql, req.params.idEvent, (error, results) => {
+                        if (error) {
+                            return res.redirect('/internal-error');
                         }
-                    );
+
+                        spotify.addTracksToPlaylist(results[0].id, formatSongs).then((data) => {
+                            return res.redirect(`/app/event/${req.params.idEvent}#playlist`);
+                        }, (err) => {
+                            // TODO
+                        })
+                    });
                 });
             } catch (error) {
                 return res.redirect('/');
@@ -111,7 +211,10 @@ class API {
         });
 
         // Route for Spotify OAuth
-        app.get('/auth/spotify', passport.authenticate('spotify'));
+        app.get('/auth/spotify', passport.authenticate('spotify', {
+            scope: ['user-read-email', 'user-read-private', 'playlist-modify-public'],
+            showDialog: true
+        }));
 
         // Callback route for Spotify OAuth
         app.get('/auth/spotify/callback', passport.authenticate('spotify', {

@@ -150,7 +150,7 @@ class EventManager {
      * @returns {void}
      */
     invitePeople() {
-        new TomSelect('#input-tags', {
+        new TomSelect('#input-tags-emails', {
             persist: false,
             createOnBlur: true,
             create: true,
@@ -165,5 +165,96 @@ class EventManager {
                 }
             }
         });
+    }
+
+    addSongToPlaylist() {
+        new TomSelect('#input-tags-songs', {
+            valueField: 'uri',
+            labelField: 'name',
+            searchField: ['name', 'artists'],
+            // maxItems: 1,
+            create: true,
+            closeAfterSelect: true,
+            load: function(query, callback) {
+                var url = `/api/search-songs?q=${encodeURIComponent(query)}`;
+                fetch(url)
+                    .then(response => response.json())
+                    .then(json => {
+                        callback(json);
+                    }).catch(() => {
+                        callback();
+                    });
+            },
+            render: {
+                option: function(item, escape) {
+                    return `
+                        <div class="py-2 d-flex">
+                            <div>
+                                <div class="mb-1">
+                                    <span>
+                                        ${escape(item.name)} - ${escape(item.artists)}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                },
+                item: function(item, escape) {
+                    return `
+                        <div class="py-0 d-flex">
+                            <div>
+                                <div class="mb-1">
+                                    <span>
+                                        ${escape(item.name)} - ${escape(item.artists)}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                },
+                no_results: function() {
+                    return `<div class="no-results">Pas de titres trouvés</div>`;
+                },
+                option_create: function(data, escape) {
+                    return;
+                }
+            },
+        });
+    }
+
+    selectTab() {
+        let hash = location.hash;
+
+        switch (hash) {
+            case '#attendees':
+                document.getElementById('attendeesTab').click();
+                break;
+            case '#chat':
+                document.getElementById('chatTab').click();
+                break;
+            case '#location':
+                document.getElementById('locationTab').click();
+                break;
+            case '#shopping-list':
+                document.getElementById('shoppingTab').click();
+                break;
+            case '#playlist':
+                document.getElementById('playlistTab').click();
+                break;
+            case '#event':
+                document.getElementById('eventTab').click();
+                break;
+        }
+
+        const tabButtons = document.getElementsByClassName('tabButton');
+        
+        for (let i = 0; i < tabButtons.length; i++) {
+            tabButtons[i].addEventListener('click', () => {
+                let btnHash = tabButtons[i].attributes.href.nodeValue;
+                let stateObj = { hash: btnHash };
+
+                window.history.pushState(stateObj, '', `${location.pathname}${btnHash}`);
+            });
+        }
     }
 }

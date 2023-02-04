@@ -684,7 +684,7 @@ class Post extends Utiles {
                     return res.redirect('/internal-error');
                 }
 
-                return res.redirect(`/app/event/${req.params.idEvent}`);
+                return res.redirect(`/app/event/${req.params.idEvent}#shopping-list`);
             });
         });
 
@@ -706,7 +706,7 @@ class Post extends Utiles {
 
                 this.sendMail('sendInvites', formatEmail, results[0].organizer, results[0].uuid);
 
-                return res.redirect(`/app/event/${req.params.idEvent}`);
+                return res.redirect(`/app/event/${req.params.idEvent}#evenement`);
             });
         });
     }

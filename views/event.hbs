@@ -33,19 +33,22 @@
             <div class="mt-3">
                 <ul class="nav nav-tabs" id="eventTabs">
                     <li class="nav-item">
-                        <a href="#attendees" class="nav-link active" data-bs-toggle="tab">Participants</a>
+                        <a href="#attendees" id="attendeesTab" class="nav-link active tabButton" data-bs-toggle="tab">Participants</a>
                     </li>
                     <li class="nav-item">
-                        <a href="#chat" class="nav-link" data-bs-toggle="tab">Chat</a>
+                        <a href="#chat" id="chatTab" class="nav-link tabButton" data-bs-toggle="tab">Chat</a>
                     </li>
                     <li class="nav-item">
-                        <a href="#emplacement" class="nav-link" data-bs-toggle="tab" data-tab="location">Emplacement</a>
+                        <a href="#location" id="locationTab" class="nav-link tabButton" data-bs-toggle="tab" data-tab="location">Emplacement</a>
                     </li>
                     <li class="nav-item">
-                        <a href="#shopping-list" class="nav-link" data-bs-toggle="tab">Liste de course</a>
+                        <a href="#shopping-list" id="shoppingTab" class="nav-link tabButton" data-bs-toggle="tab">Liste de course</a>
                     </li>
                     <li class="nav-item">
-                        <a href="#evenement" class="nav-link" data-bs-toggle="tab">Évenement</a>
+                        <a href="#playlist" id="playlistTab" class="nav-link tabButton" data-bs-toggle="tab">Playlist</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#event" id="eventTab" class="nav-link tabButton" data-bs-toggle="tab">Évenement</a>
                     </li>
                 </ul>
 
@@ -108,7 +111,7 @@
                         </ul>
                     </div>
 
-                    <div class="tab-pane fade" id="emplacement">
+                    <div class="tab-pane fade" id="location">
                         <div class="mb-3 mt-2" id="map"></div>
                     </div>
 
@@ -152,7 +155,44 @@
                         </div>
                     </div>
 
-                    <div class="tab-pane fade" id="evenement">
+                    <div class="tab-pane fade" id="playlist">
+                        {{#ifNot spotifyConnected}}
+                            <div class="btn-group mt-2" role="group">
+                                <a href="/auth/spotify" type="button" class="btn btn-success btn-leave">Se connecter à Spotify</a>
+                            </div>
+                        {{/ifNot}}
+                        {{#if isOrganizer}}
+                            {{#ifNot playlistExist}}
+                                <form action="/api/event/{{idEvent}}/create-playlist" class="needs-validation" method="post" novalidate>
+                                    <div class="mt-2" role="group">
+                                        <input class="form-control" autocomplete="off" placeholder="Nom de la playlist" name="playlistName" required>
+                                        <div class="invalid-feedback">
+                                            Veuillez insérer nom de playlist
+                                        </div>
+                                        <button type="submit" class="btn btn-success w-100 mt-2">Créer une playlist</button>
+                                    </div>
+                                </form>
+                            {{/ifNot}}
+                        {{/if}}
+
+                        {{#if playlistExist}}
+                            <form action="/api/event/{{idEvent}}/add-song-to-playlist" class="needs-validation" method="post" novalidate>
+                                <div class="mt-2 w-100">
+                                    <input id="input-tags-songs" class="w-100" value="" autocomplete="off" placeholder="Musique" name="songs" required>
+                                    <div class="invalid-feedback">
+                                        Veuillez insérer des titres
+                                    </div>
+                                </div>
+                                <div class="mt-2 w-100">
+                                    <button type="submit" class="btn btn-success w-100">Ajouter</button>
+                                </div>
+                            </form>
+
+                            <iframe class="mt-2" style="border-radius:12px" src="https://open.spotify.com/embed/playlist/{{playlistId}}?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                        {{/if}}
+                    </div>
+
+                    <div class="tab-pane fade" id="event">
                         {{#if isOrganizer}}
                             <div class="mt-2">
                                 <span>Code : </span>
@@ -167,7 +207,7 @@
 
                             <form action="/app/event/{{idEvent}}/send-invites" class="needs-validation" method="post" novalidate>
                                 <div class="mt-2 w-100">
-                                    <input id="input-tags" class="w-100" value="" autocomplete="off" placeholder="Invitation" name="emails" required>
+                                    <input id="input-tags-emails" class="w-100" value="" autocomplete="off" placeholder="Inviter" name="emails" required>
                                     <div class="invalid-feedback">
                                         Veuillez insérer une adresse mail
                                     </div>
@@ -217,16 +257,20 @@
     <script src="/libs/axios/axios.min.js"></script>
     <script src="/libs/socket.io@4.5.4/socket.io.min.js"></script>
     <script src="/pages/app/app.js"></script>
+    <script src="/pages/event/event.js"></script>
     <script>
         const app = new App;
+        const eventManager = new EventManager;
         app.leafletMap('map', {{latitude}}, {{longitude}}, `{{eventName}}`);
         app.modalsSelect(document.querySelector('#editEvent').querySelector('#address'));
         app.initChat('{{username}}', {{idEvent}});
+        eventManager.selectTab();
+        {{#if playlistExist}}
+            eventManager.addSongToPlaylist();
+        {{/if}}
     </script>
     {{#if isOrganizer}}
-        <script src="/pages/event/event.js"></script>
         <script>
-            const eventManager = new EventManager;
             eventManager.deleteUserButton();
             eventManager.editEventButton({{idEvent}});
             eventManager.copyEventCodeButton();
@@ -237,9 +281,7 @@
         </script>
     {{/if}}
     {{#ifNot isOrganizer}}
-        <script src="/pages/event/event.js"></script>
         <script>
-            const eventManager = new EventManager;
             eventManager.leaveEventButton({{idEvent}});
         </script>
     {{/ifNot}}
