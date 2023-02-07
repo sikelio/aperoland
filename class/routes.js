@@ -6,6 +6,7 @@ const adminController = require('../controller/adminController');
 const info = require('../package.json');
 const logger = require('../config/logger');
 const mysql = require('../config/mysql');
+const spotify = require('../config/spotify');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const path = require('path');
@@ -267,30 +268,48 @@ class Routes extends Utiles {
                                         return res.redirect('/internal-error');
                                     }
 
-                                    return res.render('event', {
-                                        svg: components.svg,
-                                        navbar: this.getNavbar(decoded.role),
-                                        eventName: eventInfo.name,
-                                        organizer: eventInfo.username,
-                                        description: eventInfo.description,
-                                        isOrganizer: isOrganizer,
-                                        uuid: eventInfo.uuid,
-                                        calendar: `/app/event/${eventInfo.idEvent}/calendar`,
-                                        participants: participants,
-                                        chats: chats,
-                                        shoppingList: results,
-                                        latitude: eventInfo.latitude,
-                                        longitude: eventInfo.longitude,
-                                        editEvent: components.editEvent,
-                                        deleteUser: components.deleteUser,
-                                        leaveEvent: components.leaveEvent,
-                                        deleteEvent: components.deleteEvent,
-                                        addArticle: components.addArticle,
-                                        regenerateCode: components.regenerateCode,
-                                        idEvent: eventInfo.idEvent,
-                                        date: eventInfo.date,
-                                        time: eventInfo.time,
-                                        username: decoded.username
+                                    let shoppingList = results;
+
+                                    sql = `
+                                        SELECT * FROM playlist
+                                        WHERE idEvent = ?
+                                    `;
+
+                                    mysql.query(sql, req.params.idEvent, (error, results) => {
+                                        if (error) {
+                                            return res.redirect('/internal-error');
+                                        }
+
+                                        let playlist = results[0];
+
+                                        return res.render('event', {
+                                            svg: components.svg,
+                                            navbar: this.getNavbar(decoded.role),
+                                            eventName: eventInfo.name,
+                                            organizer: eventInfo.username,
+                                            description: eventInfo.description,
+                                            isOrganizer: isOrganizer,
+                                            uuid: eventInfo.uuid,
+                                            calendar: `/app/event/${eventInfo.idEvent}/calendar`,
+                                            participants: participants,
+                                            chats: chats,
+                                            shoppingList: shoppingList,
+                                            latitude: eventInfo.latitude,
+                                            longitude: eventInfo.longitude,
+                                            editEvent: components.editEvent,
+                                            deleteUser: components.deleteUser,
+                                            leaveEvent: components.leaveEvent,
+                                            deleteEvent: components.deleteEvent,
+                                            addArticle: components.addArticle,
+                                            regenerateCode: components.regenerateCode,
+                                            idEvent: eventInfo.idEvent,
+                                            date: eventInfo.date,
+                                            time: eventInfo.time,
+                                            username: decoded.username,
+                                            spotifyConnected: req.cookies['connect.sid'] ? true : false,
+                                            playlistExist: playlist ? true : false,
+                                            playlistId: playlist.id
+                                        });
                                     });
                                 });
                             });

@@ -3,7 +3,9 @@ require('dotenv').config();
 const cookieParser = require('cookie-parser');
 const cors = require('cors')
 const express = require('express');
+const expressSession = require('express-session');
 const http = require('http');
+const passport = require('passport');
 
 // Import of class
 const API = require('./api');
@@ -61,6 +63,17 @@ class Express {
 
         // Initialization of the cookieparser
         app.use(cookieParser());
+
+        // Initialization of express session
+        app.use(expressSession({
+            secret: process.env.EXPRESS_SECRET,
+            resave: false,
+            saveUninitialized: true
+        }));
+
+        // Initialization of the passport
+        app.use(passport.initialize());
+        app.use(passport.session());
 
         // Initialization of posting routes
         post.init(app);

@@ -1,0 +1,1 @@
+ALTER TABLE `users` ADD `spotifyAccessToken` varchar(255) COLLATE 'utf8mb4_general_ci' NULL;
