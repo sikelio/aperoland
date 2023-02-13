@@ -308,7 +308,7 @@ class Routes extends Utiles {
                                             username: decoded.username,
                                             spotifyConnected: req.cookies['connect.sid'] ? true : false,
                                             playlistExist: playlist ? true : false,
-                                            playlistId: playlist.id
+                                            playlistId: playlist ? playlist.id : false
                                         });
                                     });
                                 });

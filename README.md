@@ -75,7 +75,7 @@ server {
     - [] Number of connections
     - [X] IP address of connections
  - Various
-    - [] Dark & Light mode
+    - [X] Dark & Light mode
     - [X] Innovative functionality
     - [X] Random quotes on home page from database
  - [X] Legal notice page
