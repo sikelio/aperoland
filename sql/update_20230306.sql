@@ -1,0 +1,1 @@
+ALTER TABLE `users` ADD `spotifyRefreshToken` longtext COLLATE 'utf8mb4_general_ci' NULL;

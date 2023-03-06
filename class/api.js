@@ -75,7 +75,7 @@ class API {
                 );
 
                 let sql = `
-                    SELECT spotifyAccessToken FROM users
+                    SELECT spotifyAccessToken, spotifyRefreshToken FROM users
                     WHERE idUser = ?
                 `;
 
@@ -85,6 +85,7 @@ class API {
                     }
 
                     spotify.setAccessToken(results[0].spotifyAccessToken);
+                    spotify.setRefreshToken(results[0].spotifyRefreshToken);
                     spotify.searchTracks(queryString).then((data) => {
                         let dataObject = data.body.tracks.items
 
@@ -117,7 +118,7 @@ class API {
                 );
 
                 let sql = `
-                    SELECT spotifyAccessToken FROM users
+                    SELECT spotifyAccessToken, spotifyRefreshToken FROM users
                     WHERE idUser = ?
                 `;
 
@@ -131,6 +132,7 @@ class API {
                     }
 
                     spotify.setAccessToken(results[0].spotifyAccessToken);
+                    spotify.setRefreshToken(results[0].spotifyRefreshToken);
                     spotify.createPlaylist(playlistName, {
                         description: `Test aperoland`,
                         public: true
@@ -165,7 +167,7 @@ class API {
                 );
 
                 let sql = `
-                    SELECT spotifyAccessToken FROM users
+                    SELECT spotifyAccessToken, spotifyRefreshToken FROM users
                     WHERE idUser = ?
                 `;
                 
@@ -175,6 +177,7 @@ class API {
                     }
 
                     spotify.setAccessToken(results[0].spotifyAccessToken);
+                    spotify.setRefreshToken(results[0].spotifyRefreshToken);
                     
                     sql = `
                         SELECT id FROM playlist
@@ -226,11 +229,11 @@ class API {
                 );
                 
                 let sql = `
-                    UPDATE users SET spotifyAccessToken = ?
+                    UPDATE users SET spotifyAccessToken = ?, spotifyRefreshToken = ?
                     WHERE idUser = ?
                 `;
 
-                mysql.query(sql, [req.user, decoded.idUser], (error, results) => {
+                mysql.query(sql, [req.user.accessToken, req.user.refreshToken, decoded.idUser], (error, results) => {
                     if (error) {
                         return res.redirect('/internal-error');
                     }

@@ -378,6 +378,9 @@ class Routes extends Utiles {
      * @returns Page
      */
     #admin(app) {
+        const SocketIO = require('./socketio');
+        const socketio = new SocketIO;
+
         // User list page
         app.get('/admin/users', adminController.isAdmin, async (req, res) => {
             mysql.query('SELECT * FROM users WHERE role = \'User\'', (error, results) => {
@@ -389,7 +392,8 @@ class Routes extends Utiles {
                     svg: components.svg,
                     navbar: components.adminNavbar,
                     users: results,
-                    confirmDeleteUser: components.confirmDeleteUser
+                    confirmDeleteUser: components.confirmDeleteUser,
+                    numberConnected: socketio.getActualConnected()
                 });
             });
         });

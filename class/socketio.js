@@ -5,6 +5,7 @@ const mysql = require('../config/mysql');
 class SocketIO {
     #io;
     #users = [];
+    #connectCounter = 0;
 
     /**
      * Initialization of socket messages
@@ -20,6 +21,8 @@ class SocketIO {
             }
         });
         this.#io.on('connection', (socket) => {
+            this.#connectCounter++;
+
             socket.on('joinRoom', ({ username, room }) => {
                 const user = this.#userJoin(socket.id, username, room);
 
@@ -29,6 +32,8 @@ class SocketIO {
             socket.on('chat message', (msg) => {
                 this.#chatBox(socket, msg);
             });
+
+            socket.on('disconnect', () => { this.#connectCounter--; });
         });
     }
 
@@ -94,6 +99,10 @@ class SocketIO {
                 msg: msg.msg
             });
         });
+    }
+
+    getActualConnected() {
+        return this.#connectCounter;
     }
 }
 
