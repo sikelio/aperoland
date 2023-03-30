@@ -72,7 +72,7 @@ server {
 ## TODO
  - [X] Auth System
  - BackOffice
-    - [] Number of connections
+    - [X] Number of connections
     - [X] IP address of connections
  - Various
     - [X] Dark & Light mode

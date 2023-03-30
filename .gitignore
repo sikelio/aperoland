@@ -2,6 +2,7 @@
 .env
 
 # Folders
+.idea
 calendar
 logs
 node_modules

@@ -140,6 +140,7 @@ class Post extends Utiles {
                         const username = results[0].username;
                         const role = results[0].role;
                         const ip = req.ip;
+                        const nbConnection = results[0].nbConnection + 1;
 
                         const date = new Date(), day = date.getDate(), month = date.getMonth() + 1,
                         year = date.getFullYear(), hours = date.getHours(), minutes = date.getMinutes(),
@@ -150,11 +151,11 @@ class Post extends Utiles {
 
                         let sql = `
                             UPDATE users SET
-                            lastIp = ?, lastConnectionDate = ?, lastConnectionTime = ?
+                            lastIp = ?, lastConnectionDate = ?, lastConnectionTime = ?, nbConnection = ?
                             WHERE idUser = ?
                         `;
 
-                        mysql.query(sql, [ip, lastConnectionDate, lastConnectionTime, idUser], (error, results) => {
+                        mysql.query(sql, [ip, lastConnectionDate, lastConnectionTime, nbConnection, idUser], (error, results) => {
                             if (error) {
                                 return res.redirect('/internal-error');
                             }
