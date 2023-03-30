@@ -392,8 +392,7 @@ class Routes extends Utiles {
                     svg: components.svg,
                     navbar: components.adminNavbar,
                     users: results,
-                    confirmDeleteUser: components.confirmDeleteUser,
-                    numberConnected: socketio.getActualConnected()
+                    confirmDeleteUser: components.confirmDeleteUser
                 });
             });
         });

@@ -25,6 +25,7 @@
                         <th scope="col">Date</th>
                         <th scope="col">Heure</th>
                         <th scope="col">Vérifié ?</th>
+                        <th scope="col">Nb Connexion</th>
                     </thead>
                     <tbody>
                         {{#if users}}
@@ -48,6 +49,7 @@
                                             Non
                                         {{/ifEquals}}
                                     </td>
+                                    <td>{{nbConnection}}</td>
                                 </tr>
                             {{/each}}
                         {{else}}
@@ -57,8 +59,6 @@
                         {{/if}}
                     </tbody>
                 </table>
-
-                {{numberConnected}}
             </div>
         </div>
     </main>
@@ -68,12 +68,10 @@
     <script src="/libs/bootstrap@5.3.0-alpha1/bootstrap.bundle.js"></script>
     <script src="/libs/bootstrap@5.3.0-alpha1/color-mode.js"></script>
     <script src="/libs/axios/axios.min.js"></script>
-    <script src="/libs/socket.io@4.5.4/socket.io.min.js"></script>
     <script src="/pages/users/users.js"></script>
     <script>
         const users = new Users;
         users.init();
-        const io = socket();
     </script>
 </body>
 </html>
